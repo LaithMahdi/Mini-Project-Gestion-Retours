@@ -1,0 +1,198 @@
+{
+  "v": 11,
+  "name": "gestion_retour",
+  "folders": [
+    {
+      "v": 11,
+      "name": "product",
+      "folders": [],
+      "requests": [
+        {
+          "v": "17",
+          "endpoint": "<<BASE_URL>>/retours/create",
+          "name": "create product",
+          "params": [],
+          "headers": [],
+          "method": "POST",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "preRequestScript": "",
+          "testScript": "",
+          "body": {
+            "contentType": "application/json",
+            "body": "// {\n//   \"produit\": \"iPhone 13 Pro Max - 256GB - Sierra Blue\",\n//   \"client\": \"Marie Lambert\",\n//   \"raison\": \"Produit défectueux - L'écran ne s'allume pas après 2 jours d'utilisation\",\n//   \"etatTraitement\": \"EN_ATTENTE\",\n//   \"date\": \"2026-03-17\"\n// }\n\n// {\n//   \"produit\": \"Nike Air Max 270 - Homme - Taille 42\",\n//   \"client\": \"Thomas Dubois\",\n//   \"raison\": \"Taille incorrecte\",\n//   \"etatTraitement\": \"APPROUVE\",\n//   \"date\": \"2026-03-15\"\n// }\n\n{\n  \"produit\": \"Canapé d'angle - Gris\",\n  \"client\": \"Sophie Martin\",\n  \"raison\": \"Colis endommagé\",\n  \"etatTraitement\": \"ECHANGE\",\n  \"date\": \"2026-03-14\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "endpoint": "<<BASE_URL>>/retours",
+          "name": "all products",
+          "params": [
+            {
+              "key": "size",
+              "value": "1",
+              "active": false,
+              "description": ""
+            },
+            {
+              "key": "page",
+              "value": "2",
+              "active": false,
+              "description": ""
+            },
+            {
+              "key": "client",
+              "value": "Lambert",
+              "active": false,
+              "description": ""
+            },
+            {
+              "key": "produit",
+              "value": "iPhone 13",
+              "active": false,
+              "description": ""
+            },
+            {
+              "key": "etatTraitement",
+              "value": "EN_ATTENTE",
+              "active": false,
+              "description": ""
+            },
+            {
+              "key": "numberOfMonths",
+              "value": "2",
+              "active": false,
+              "description": ""
+            }
+          ],
+          "headers": [],
+          "method": "GET",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "preRequestScript": "",
+          "testScript": "",
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "endpoint": "<<BASE_URL>>/retours/1",
+          "name": "product detail",
+          "params": [],
+          "headers": [],
+          "method": "GET",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "preRequestScript": "",
+          "testScript": "",
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "endpoint": "<<BASE_URL>>/retours/patch/1",
+          "name": "patch product",
+          "params": [],
+          "headers": [],
+          "method": "PATCH",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "preRequestScript": "",
+          "testScript": "",
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"etatTraitement\": \"EN_ATTENTE\"\n}\n"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "endpoint": "<<BASE_URL>>/retours/update/1",
+          "name": "update product",
+          "params": [],
+          "headers": [],
+          "method": "PUT",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "preRequestScript": "",
+          "testScript": "",
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"client\": \"Thomas Dubois\",\n  \"date\": \"2026-02-15\",\n  \"etatTraitement\": \"EN_ATTENTE\",\n  \"id\": 1,\n  \"produit\": \"Nike Air Max 270 - Homme - Taille 42\",\n  \"raison\": \"Taille incorrecte\"\n}\n"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        },
+        {
+          "v": "17",
+          "endpoint": "<<BASE_URL>>/retours/delete/1",
+          "name": "delete product",
+          "params": [],
+          "headers": [],
+          "method": "DELETE",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "preRequestScript": "",
+          "testScript": "",
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"etatTraitement\": \"EN_ATTENTE\"\n}\n"
+          },
+          "requestVariables": [],
+          "responses": {},
+          "description": null
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "variables": [],
+      "description": null
+    }
+  ],
+  "requests": [],
+  "headers": [],
+  "auth": {
+    "authType": "none",
+    "authActive": true
+  },
+  "variables": [
+    {
+      "key": "BASE_URL",
+      "currentValue": "",
+      "initialValue": "http://localhost:8080/api/v1",
+      "secret": false
+    }
+  ],
+  "description": ""
+}

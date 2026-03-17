@@ -66,7 +66,7 @@ public class RetourProduitController {
         return ResponseEntity.ok(ApiResponse.success("Retour produit fetched successfully", retour));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Retour produit deleted successfully", null));
