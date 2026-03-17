@@ -6,16 +6,20 @@ import com.example.gestionretours.config.PaginatedResponse;
 import com.example.gestionretours.entites.EtatTraitement;
 import com.example.gestionretours.entites.RetourProduit;
 import com.example.gestionretours.services.RetourProduitService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+
 @RestController
 @RequestMapping("/retours")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Retour Produit API", description = "API for managing product returns")
 public class RetourProduitController {
 
     private final RetourProduitService service;
@@ -48,7 +52,7 @@ public class RetourProduitController {
             @RequestParam(required = false) Integer numberOfMonths,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        
+
         RetourFilter filter = new RetourFilter(client, produit, etatTraitement, numberOfMonths);
         PaginatedResponse<RetourProduit> response = service.findAllWithFilterAndPagination(filter, page, size);
         PaginatedApiResponse<RetourProduit> paginatedApiResponse = new PaginatedApiResponse<>(
