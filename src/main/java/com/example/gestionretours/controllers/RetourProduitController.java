@@ -27,6 +27,18 @@ public class RetourProduitController {
                 .body(ApiResponse.success("Retour produit created successfully", savedRetour));
     }
 
+    @PatchMapping("/patch/{id}")
+    public ResponseEntity<ApiResponse<RetourProduit>> patch(@PathVariable Long id,@RequestBody RetourProduit retour) {
+        RetourProduit updatedRetour = service.patch(id, retour);
+        return ResponseEntity.ok(ApiResponse.success("Retour produit updated successfully", updatedRetour));
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ApiResponse<RetourProduit>> put(@PathVariable Long id,@Valid @RequestBody RetourProduit retour) {
+        RetourProduit updatedRetour = service.update(id, retour);
+        return ResponseEntity.ok(ApiResponse.success("Retour produit updated successfully", updatedRetour));
+    }
+
     @GetMapping
     public ResponseEntity<ApiResponse<List<RetourProduit>>> getAll() {
         List<RetourProduit> retours = service.findAll();

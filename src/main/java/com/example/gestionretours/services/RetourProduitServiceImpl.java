@@ -31,4 +31,27 @@ public class RetourProduitServiceImpl implements RetourProduitService{
     public void delete(Long id) {
         repo.deleteById(id);
     }
+
+    @Override
+    public RetourProduit patch(Long id, RetourProduit retour) {
+        RetourProduit existing = findById(id);
+        if (retour.getProduit() != null) existing.setProduit(retour.getProduit());
+        if (retour.getRaison() != null) existing.setRaison(retour.getRaison());
+        if (retour.getClient() != null) existing.setClient(retour.getClient());
+        if (retour.getEtatTraitement() != null) existing.setEtatTraitement(retour.getEtatTraitement());
+        if (retour.getDate() != null) existing.setDate(retour.getDate());
+        return   repo.save(existing);
+    }
+
+
+    @Override
+    public RetourProduit update(Long id, RetourProduit retour) {
+        RetourProduit existing = findById(id);
+        existing.setProduit(retour.getProduit());
+        existing.setRaison(retour.getRaison());
+        existing.setClient(retour.getClient());
+        existing.setEtatTraitement(retour.getEtatTraitement());
+        existing.setDate(retour.getDate());
+        return repo.save(existing);
+    }
 }

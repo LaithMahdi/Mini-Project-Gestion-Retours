@@ -8,4 +8,7 @@ public interface RetourProduitService {
     List<RetourProduit> findAll();
     RetourProduit findById(Long id);
     void delete(Long id);
+    RetourProduit patch(Long id, RetourProduit retour);
+    RetourProduit update(Long id, RetourProduit retour);
+
 }
