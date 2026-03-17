@@ -1,6 +1,9 @@
 package com.example.gestionretours.controllers;
 
 import com.example.gestionretours.config.ApiResponse;
+import com.example.gestionretours.config.PaginatedApiResponse;
+import com.example.gestionretours.config.PaginatedResponse;
+import com.example.gestionretours.entites.EtatTraitement;
 import com.example.gestionretours.entites.RetourProduit;
 import com.example.gestionretours.services.RetourProduitService;
 import jakarta.validation.Valid;
@@ -9,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-
 @RestController
 @RequestMapping("/retours")
 @RequiredArgsConstructor
@@ -40,9 +41,23 @@ public class RetourProduitController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<RetourProduit>>> getAll() {
-        List<RetourProduit> retours = service.findAll();
-        return ResponseEntity.ok(ApiResponse.success("Retour produits fetched successfully", retours));
+    public ResponseEntity<PaginatedApiResponse<RetourProduit>> getAll(
+            @RequestParam(required = false) String client,
+            @RequestParam(required = false) String produit,
+            @RequestParam(required = false) EtatTraitement etatTraitement,
+            @RequestParam(required = false) Integer numberOfMonths,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        
+        RetourFilter filter = new RetourFilter(client, produit, etatTraitement, numberOfMonths);
+        PaginatedResponse<RetourProduit> response = service.findAllWithFilterAndPagination(filter, page, size);
+        PaginatedApiResponse<RetourProduit> paginatedApiResponse = new PaginatedApiResponse<>(
+                true,
+                "Retour produits fetched successfully",
+                response.getData(),
+                response.getEdgeInfo()
+        );
+        return ResponseEntity.ok(paginatedApiResponse);
     }
 
     @GetMapping("/{id}")
