@@ -1,7 +1,7 @@
 package com.example.gestionretours.entites;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import javax.persistence.*;
+import javax.validation.constraints.*;
 import lombok.Data;
 import java.time.LocalDate;
 
