@@ -7,12 +7,14 @@ import com.example.gestionretours.entites.EtatTraitement;
 import com.example.gestionretours.entites.RetourProduit;
 import com.example.gestionretours.services.RetourProduitService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -62,6 +64,14 @@ public class RetourProductController {
                 response.getEdgeInfo()
         );
         return ResponseEntity.ok(paginatedApiResponse);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiResponse<List<RetourProduit>>> getAllNoFilter() {
+        List<RetourProduit> retours = service.findAll();
+        return ResponseEntity.ok(
+                ApiResponse.success("All retour produits fetched successfully", retours)
+        );
     }
 
     @GetMapping("/{id}")

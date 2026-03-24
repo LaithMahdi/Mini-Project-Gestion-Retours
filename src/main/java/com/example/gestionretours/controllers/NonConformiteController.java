@@ -3,6 +3,7 @@ package com.example.gestionretours.controllers;
 import com.example.gestionretours.config.ApiResponse;
 import com.example.gestionretours.config.PaginatedApiResponse;
 import com.example.gestionretours.config.PaginatedResponse;
+import com.example.gestionretours.entites.Gravite;
 import com.example.gestionretours.entites.NonConformite;
 import com.example.gestionretours.services.NonConformiteService;
 import lombok.RequiredArgsConstructor;
@@ -49,12 +50,11 @@ public class NonConformiteController {
     @GetMapping
     public ResponseEntity<PaginatedApiResponse<NonConformite>> getAll(
             @RequestParam(required = false) String produit,
-            @RequestParam(required = false) String gravite,
-            @RequestParam(required = false) Integer numberOfMonths,
+            @RequestParam(required = false) Gravite gravite,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        NonConformiteFilter filter = new NonConformiteFilter(produit, gravite, numberOfMonths);
+        NonConformiteFilter filter = new NonConformiteFilter(produit, gravite);
 
         PaginatedResponse<NonConformite> response =
                 service.findAllWithFilterAndPagination(filter, page, size);

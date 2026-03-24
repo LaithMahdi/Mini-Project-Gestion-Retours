@@ -1,6 +1,7 @@
 package com.example.gestionretours.services;
 
 import com.example.gestionretours.controllers.NonConformiteFilter;
+import com.example.gestionretours.entites.Gravite;
 import com.example.gestionretours.entites.NonConformite;
 import com.example.gestionretours.entites.RetourProduit;
 import com.example.gestionretours.repos.NonConformiteRepository;
@@ -77,7 +78,6 @@ public class NonConformiteServiceImpl implements NonConformiteService {
         List<NonConformite> filtered = all.stream()
                 .filter(nc -> filterByProduit(nc, filter.getProduit()))
                 .filter(nc -> filterByGravite(nc, filter.getGravite()))
-                .filter(nc -> filterByDate(nc, filter.getNumberOfMonths()))
                 .collect(Collectors.toList());
 
         long totalItems = filtered.size();
@@ -106,8 +106,7 @@ public class NonConformiteServiceImpl implements NonConformiteService {
         return nc.getProduit().getProduit().toLowerCase().contains(produit.toLowerCase());
     }
 
-    private boolean filterByGravite(NonConformite nc, String gravite) {
-        if (gravite == null || gravite.isEmpty()) return true;
+    private boolean filterByGravite(NonConformite nc, Gravite gravite) {
         return nc.getGravite().equals(gravite);
     }
 
