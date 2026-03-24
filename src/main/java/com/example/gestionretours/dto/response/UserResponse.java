@@ -1,7 +1,6 @@
 package com.example.gestionretours.dto.response;
 
 import com.example.gestionretours.entites.Role;
-import com.example.gestionretours.entites.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
