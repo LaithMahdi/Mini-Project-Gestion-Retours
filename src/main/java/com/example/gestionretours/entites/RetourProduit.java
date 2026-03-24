@@ -1,12 +1,15 @@
 package com.example.gestionretours.entites;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
+@Table(name="retours")
 public class RetourProduit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,4 +39,9 @@ public class RetourProduit {
     @PastOrPresent(message = "Date cannot be in the future")
     @Column(nullable = false)
     private LocalDate date;
+
+
+    @OneToMany(mappedBy = "produit", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<NonConformite> nonConformites;
 }
