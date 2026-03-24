@@ -7,7 +7,7 @@ import com.example.gestionretours.entites.EtatTraitement;
 import com.example.gestionretours.entites.RetourProduit;
 import com.example.gestionretours.services.RetourProduitService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Retour Produit API", description = "API for managing product returns")
-public class RetourProduitController {
+public class RetourProductController {
 
     private final RetourProduitService service;
 
