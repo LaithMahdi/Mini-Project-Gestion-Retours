@@ -107,6 +107,7 @@ public class NonConformiteServiceImpl implements NonConformiteService {
     }
 
     private boolean filterByGravite(NonConformite nc, Gravite gravite) {
+        if (gravite == null) return true;
         return nc.getGravite().equals(gravite);
     }
 
