@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,20 +33,20 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            /*    .authorizeHttpRequests(auth -> auth
-
-                        // ── Swagger UI & OpenAPI docs ────────────────────────────
-                       .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-
-                        // ── Public endpoints ──────────────────────────────────────
-                        .requestMatchers("/api/auth/**").permitAll()
-
-                        // ── Admin-only endpoints ──────────────────────────────────
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                // Auth routes are versioned by ApiConfig (/api/v1/**), keep whitelist aligned.
+                                "/api/v1/auth/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs",
+                                "/v3/api-docs/**",
+                                "/webjars/**",
+                                "/swagger-resources/**"
+                        ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                        // ── All other requests need authentication ────────────────
                         .anyRequest().authenticated()
-                )   */
+                )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

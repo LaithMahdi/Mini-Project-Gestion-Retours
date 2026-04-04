@@ -32,10 +32,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-
         final String authHeader = request.getHeader("Authorization");
 
-        // No token → skip (let Security decide based on route config)
+        // If no token → continue
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -47,20 +46,44 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             final String userEmail = jwtUtil.extractUsername(jwt);
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
                 if (jwtUtil.isTokenValid(jwt, userDetails)) {
+
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
-                                    userDetails, null, userDetails.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities()
+                            );
+
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource().buildDetails(request)
+                    );
+
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
+
         } catch (Exception e) {
             log.warn("JWT validation failed: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    // Skip filter for Swagger & Auth endpoints
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+
+        String path = request.getServletPath();
+
+        return path.startsWith("/swagger-ui")
+                || path.equals("/swagger-ui.html")
+                || path.startsWith("/v3/api-docs")
+                || path.startsWith("/webjars")
+                || path.startsWith("/swagger-resources")
+                || path.startsWith("/api/v1/auth");
     }
 }
