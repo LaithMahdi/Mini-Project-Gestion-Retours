@@ -110,7 +110,7 @@ This is the easiest way to get started. Docker Compose will automatically set up
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/LaithMahdi/gestion-retours-backend
    cd gestion-retours
    ```
 
