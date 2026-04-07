@@ -7,20 +7,24 @@ import com.example.gestionretours.dto.NonConformiteDTO;
 import com.example.gestionretours.entites.Gravite;
 import com.example.gestionretours.entites.NonConformite;
 import com.example.gestionretours.services.NonConformiteService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/non-conformites")
 @RequiredArgsConstructor
 @Tag(name = "Non Conformite API", description = "API for managing non conformities related to product returns")
+@SecurityRequirement(name = "bearerAuth")
 public class NonConformiteController {
 
     private final NonConformiteService service;
 
     @PostMapping("/{produitId}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResponse<NonConformite>> create(
             @PathVariable Long produitId,
             @RequestBody NonConformite nc) {
@@ -31,6 +35,7 @@ public class NonConformiteController {
     }
 
     @PatchMapping("/patch/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResponse<NonConformite>> patch(
             @PathVariable Long id,
             @RequestBody NonConformite nc) {
@@ -41,6 +46,7 @@ public class NonConformiteController {
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResponse<NonConformite>> update(
             @PathVariable Long id,
             @RequestBody NonConformite nc) {
@@ -51,6 +57,7 @@ public class NonConformiteController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<PaginatedApiResponse<NonConformiteDTO>> getAll(
             @RequestParam(required = false) String produit,
             @RequestParam(required = false) Gravite gravite,
@@ -77,6 +84,7 @@ public class NonConformiteController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
     public ResponseEntity<ApiResponse<NonConformiteDTO>> getById(@PathVariable Long id) {
         NonConformite nc = service.getById(id);
         return ResponseEntity.ok(
@@ -85,6 +93,7 @@ public class NonConformiteController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.ok(

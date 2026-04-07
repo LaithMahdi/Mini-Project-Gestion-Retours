@@ -6,6 +6,7 @@ import com.example.gestionretours.dto.UpdateUserRequest;
 import com.example.gestionretours.dto.UserResponse;
 import com.example.gestionretours.entites.Role;
 import com.example.gestionretours.services.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "User API", description = "API for managing users")
+@SecurityRequirement(name = "bearerAuth")
 public class UserController {
 
     private final UserService userService;

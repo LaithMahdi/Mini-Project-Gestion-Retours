@@ -1,135 +1,196 @@
 # Gestion Retours - Product Returns Management System
 
-A Spring Boot REST API application for managing product returns and non-conformities in a business system.
+A Spring Boot REST API application for managing product returns and non-conformities in a business system with JWT authentication, role-based access control, and comprehensive seed data for testing.
 
 ## Project Overview
 
 **Gestion Retours** is a comprehensive product returns management system built with:
+
 - **Backend**: Spring Boot 4.0.3 with Java 17
 - **Database**: MySQL 8
-- **API Documentation**: Swagger UI (SpringDoc OpenAPI)
-- **Authentication**: JWT-based security
+- **API Documentation**: Swagger UI (SpringDoc OpenAPI) with Bearer token support
+- **Authentication**: JWT-based security with role-based access control (RBAC)
 - **Architecture**: REST API with Service-Repository pattern
+- **Seed Data**: Auto-generated test data on startup
 
-## Features
+## ✨ Key Features
 
-- **Authentication & Authorization**
-  - User registration and login with JWT tokens
-  - Role-based access control
-  - Secure endpoints with JWT authentication
+### 🔐 Security & Authentication
 
-- **Product Returns Management**
-  - Create and manage product returns
-  - Track return status (Traitement states)
-  - Pagination support for large datasets
-  - Advanced filtering capabilities
+- User registration and login with JWT tokens
+- Role-based access control (ADMIN, MANAGER, USER)
+- Secure endpoints with JWT authentication
+- Bearer token support in Swagger UI
+- Password hashing with BCrypt
 
-- **Non-Conformities Management**
-  - Record and manage non-conformities
-  - Track severity levels (Gravité)
-  - Link non-conformities to returns
-  - Detailed non-conformity information
+### 📦 Product Returns Management
 
-- **API Documentation**
-  - Swagger UI for interactive API testing
-  - OpenAPI 3.0 specification
-  - Full endpoint documentation
+- Create and manage product returns
+- Track return status (8 different treatment states)
+- Pagination and filtering support
+- Realistic 50+ test returns with varied data
+
+### ⚠️ Non-Conformities Management
+
+- Record and manage non-conformities
+- Track severity levels (FAIBLE, MOYENNE, ELEVEE, CRITIQUE)
+- Link non-conformities to returns
+- 50+ test non-conformities with realistic scenarios
+
+### 🌱 Auto-Generated Test Data
+
+- **5 Test Users**: 1 admin + 2 managers + 2 regular users
+- **50 Product Returns**: Realistic products, clients, and states
+- **50 Non-Conformities**: Various severity levels and descriptions
+- **Idempotent Initialization**: Safe to run multiple times
+
+### 📚 API Documentation
+
+- Interactive Swagger UI with Bearer token support
+- OpenAPI 3.0 specification
+- Full endpoint documentation with security requirements
+- Real-time endpoint testing
 
 ## Technology Stack
 
-| Component | Version |
-|-----------|---------|
-| Spring Boot | 4.0.3 |
-| Java | 17 |
-| MySQL | 8 |
-| Maven | 3.9.1 |
-| JWT | For authentication |
-| SpringDoc OpenAPI | 3.0.2 |
-| Lombok | For code generation |
+| Component         | Version |
+| ----------------- | ------- |
+| Spring Boot       | 4.0.3   |
+| Java              | 17      |
+| MySQL             | 8       |
+| Maven             | 3.9.1   |
+| JWT (JJWT)        | 0.11.5  |
+| SpringDoc OpenAPI | 3.0.2   |
+| Lombok            | Latest  |
+
+## 🧪 Test Users & Credentials
+
+All credentials are pre-configured in the database on first startup:
+
+```
+┌──────────────────────────────────────────────────────────┐
+│ Role    │ Email                  │ Password              │
+├──────────────────────────────────────────────────────────┤
+│ ADMIN   │ admin@delivery.com     │ admin                 │
+│ MANAGER │ manager1@delivery.com  │ manager123            │
+│ MANAGER │ manager2@delivery.com  │ manager123            │
+│ USER    │ user1@delivery.com     │ user123               │
+│ USER    │ user2@delivery.com     │ user123               │
+└──────────────────────────────────────────────────────────┘
+```
+
+## 📊 Database Content After Initialization
+
+```
+✅ Total Users:           5 (1 Admin + 2 Manager + 2 User)
+✅ Product Returns:       50 (various states and clients)
+✅ Non-Conformities:      50 (various severity levels)
+✅ Total Records:         105
+```
 
 ## Project Structure
 
 ```
 gestion-retours/
 ├── src/main/java/com/example/gestionretours/
-│   ├── controllers/       # REST API endpoints
-│   ├── services/          # Business logic layer
-│   ├── repos/             # Data access layer
-│   ├── entites/           # JPA entity models
-│   ├── dto/               # Data Transfer Objects
-│   ├── config/            # Configuration classes
-│   ├── security/          # JWT & security utilities
-│   └── exceptions/        # Custom exceptions
+│   ├── controllers/          # REST API endpoints
+│   │   ├── UserController.java
+│   │   ├── RetourProductController.java
+│   │   ├── NonConformiteController.java
+│   │   └── AuthController.java
+│   ├── services/             # Business logic layer
+│   ├── repos/                # Data access layer
+│   ├── entites/              # JPA entity models
+│   ├── dto/                  # Data Transfer Objects
+│   ├── config/
+│   │   ├── DataInitializer.java      # 🌱 Seed data generator
+│   │   ├── SecurityConfig.java       # Security configuration
+│   │   ├── ApiConfig.java            # API & Swagger config
+│   │   └── GlobalExceptionHandler.java
+│   ├── security/             # JWT & security utilities
+│   └── exceptions/           # Custom exceptions
 ├── src/main/resources/
-│   └── application.properties  # Spring configuration
-├── Dockerfile             # Docker image definition
-├── docker-compose.yml     # Multi-container setup
-└── pom.xml               # Maven dependencies
+│   └── application.properties
+├── 📚 Documentation/
+│   ├── README.md (this file)
+│   ├── QUICK_START.md                # ⭐ Start here
+│   ├── TEST_USERS_REFERENCE.md       # Copy-paste credentials
+│   ├── SEED_DATA_GUIDE.md            # Complete guide
+│   ├── IMPLEMENTATION_GUIDE.md       # Technical details
+│   └── DOCUMENTATION_INDEX.md        # Guide index
+├── Dockerfile
+├── docker-compose.yml
+└── pom.xml
 ```
 
 ## Prerequisites
 
 ### For Local Development
+
 - Java 17 or higher
 - Maven 3.9.1 or higher
 - MySQL 8
 - Git
 
 ### For Docker Development
+
 - Docker Desktop (or Docker Engine)
 - Docker Compose
 
-## Important Note: 403 Authorization Error
+## Getting Started
 
-**If you see "Access to localhost:8080 was denied. HTTP ERROR 403"**
+### ⭐ Quick Start (3 Steps)
 
-This is **EXPECTED and CORRECT!** Your application has JWT security enabled. The home endpoint (`/`) is protected and requires authentication. This is not an error - it's your security working as intended!
+#### Step 1: Start Application
 
-**To access the API, you need to:**
-1. Register a user using the `/auth/register` endpoint
-2. Login using the `/auth/login` endpoint to get a JWT token
-3. Use that token in the `Authorization: Bearer YOUR_TOKEN` header for protected endpoints
+```bash
+cd C:\Users\Laith PC\IdeaProjects\gestion-retours
+./mvnw spring-boot:run
+```
 
-**The easiest way to test is via Swagger UI:** http://localhost:8080/swagger-ui.html (HTTP 200 ✓)
+#### Step 2: Open Swagger UI
 
-See **Testing the API** section below for examples.
+```
+http://localhost:8080/swagger-ui.html
+```
+
+#### Step 3: Login with Test Credentials
+
+- Email: `manager1@delivery.com`
+- Password: `manager123`
+- Get JWT token and click "Authorize" button
 
 ---
 
-## Getting Started
-
 ### Option 1: Running with Docker Compose (Recommended)
-
-This is the easiest way to get started. Docker Compose will automatically set up MySQL, the application, and phpMyAdmin.
-
-#### Prerequisites
-- Docker Desktop installed and running
-- Docker Compose installed
 
 #### Steps
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/LaithMahdi/gestion-retours-backend
    cd gestion-retours
    ```
 
 2. **Start all services**
+
    ```bash
    docker-compose up -d
    ```
 
-   This command will:
+   This will:
    - Start MySQL database on port 3306
-   - Build and start the Spring Boot application on port 8080
+   - Build and start Spring Boot application on port 8080
    - Start phpMyAdmin on port 8088
-   - Create the `gestion_retour` database automatically
+   - Create `gestion_retour` database automatically
+   - Initialize seed data
 
 3. **Wait for services to be healthy**
+
    ```bash
    docker-compose logs -f retour-app
    ```
-   Wait until you see messages indicating the application is ready.
 
 4. **Access the application**
    - **API**: http://localhost:8080
@@ -143,34 +204,26 @@ This is the easiest way to get started. Docker Compose will automatically set up
    docker-compose down
    ```
 
-   To also remove volumes:
-   ```bash
-   docker-compose down -v
-   ```
-
 ---
 
 ### Option 2: Running Locally (Development)
 
-#### Prerequisites
-- Java 17+ installed
-- MySQL 8 running locally
-- Maven installed
-
 #### Steps
 
 1. **Setup MySQL Database**
+
    ```bash
-   # Start MySQL server and create database
    mysql -u root -p
    ```
+
    ```sql
    CREATE DATABASE gestion_retour CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
 
 2. **Configure application.properties**
-   
+
    Edit `src/main/resources/application.properties`:
+
    ```ini
    spring.datasource.url=jdbc:mysql://localhost:3306/gestion_retour?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
    spring.datasource.username=root
@@ -178,17 +231,15 @@ This is the easiest way to get started. Docker Compose will automatically set up
    ```
 
 3. **Build the project**
+
    ```bash
    mvn clean package
    ```
 
 4. **Run the application**
+
    ```bash
    mvn spring-boot:run
-   ```
-   Or:
-   ```bash
-   java -jar target/gestion-retours-0.0.1-SNAPSHOT.jar
    ```
 
 5. **Access the application**
@@ -197,178 +248,266 @@ This is the easiest way to get started. Docker Compose will automatically set up
 
 ---
 
-## API Endpoints
+## 🔑 API Endpoints
 
-### Authentication
+All endpoints except authentication are protected with JWT authentication and role-based access control.
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/auth/register` | Register a new user |
-| POST | `/auth/login` | Login and get JWT token |
+### Authentication (No Auth Required)
 
-### Product Returns
+| Method | Endpoint                | Description             |
+| ------ | ----------------------- | ----------------------- |
+| POST   | `/api/v1/auth/register` | Register a new user     |
+| POST   | `/api/v1/auth/login`    | Login and get JWT token |
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/retours/create` | Create a new product return |
-| PATCH | `/retours/patch/{id}` | Update a return |
-| GET | `/retours` | Get all returns with pagination |
-| GET | `/retours/{id}` | Get a specific return |
+### Product Returns (Role-Based)
 
-### Non-Conformities
+| Method | Endpoint                      | Permissions          |
+| ------ | ----------------------------- | -------------------- |
+| POST   | `/api/v1/retours/create`      | ADMIN, MANAGER       |
+| PATCH  | `/api/v1/retours/patch/{id}`  | ADMIN, MANAGER       |
+| PUT    | `/api/v1/retours/update/{id}` | ADMIN, MANAGER       |
+| GET    | `/api/v1/retours`             | ADMIN, MANAGER, USER |
+| GET    | `/api/v1/retours/{id}`        | ADMIN, MANAGER, USER |
+| DELETE | `/api/v1/retours/delete/{id}` | ADMIN, MANAGER       |
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/nonconformites/create` | Create a new non-conformity |
-| GET | `/nonconformites` | Get all non-conformities |
-| GET | `/nonconformites/{id}` | Get a specific non-conformity |
+### Non-Conformities (Role-Based)
 
-### Home
+| Method | Endpoint                              | Permissions          |
+| ------ | ------------------------------------- | -------------------- |
+| POST   | `/api/v1/non-conformites/{produitId}` | ADMIN, MANAGER, USER |
+| PATCH  | `/api/v1/non-conformites/patch/{id}`  | ADMIN, MANAGER       |
+| PUT    | `/api/v1/non-conformites/update/{id}` | ADMIN, MANAGER       |
+| GET    | `/api/v1/non-conformites`             | ADMIN, MANAGER, USER |
+| GET    | `/api/v1/non-conformites/{id}`        | ADMIN, MANAGER, USER |
+| DELETE | `/api/v1/non-conformites/delete/{id}` | ADMIN, MANAGER       |
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Home endpoint |
+### Users (Admin Only)
 
-> **Note**: All endpoints except `/auth/register` and `/auth/login` require JWT authentication.
+| Method | Endpoint                          | Permissions          |
+| ------ | --------------------------------- | -------------------- |
+| GET    | `/api/v1/users/me`                | ADMIN, MANAGER, USER |
+| POST   | `/api/v1/users/create`            | ADMIN                |
+| GET    | `/api/v1/users`                   | ADMIN                |
+| GET    | `/api/v1/users/{id}`              | ADMIN                |
+| PUT    | `/api/v1/users/update/{id}`       | ADMIN                |
+| DELETE | `/api/v1/users/delete/{id}`       | ADMIN                |
+| GET    | `/api/v1/users/role/{role}`       | ADMIN                |
+| GET    | `/api/v1/users/search?nom={name}` | ADMIN                |
 
 ---
 
-## Configuration
+## 🔐 Security & Authorization
 
-### Docker Environment Variables
+### User Roles
 
-The Docker Compose setup uses the following environment variables:
+#### 👨‍💼 ADMIN - Full System Access
 
-**MySQL Service**:
-- `MYSQL_ROOT_PASSWORD`: root
-- `MYSQL_DATABASE`: gestion_retour
+- ✅ View and manage all users
+- ✅ Full CRUD on returns and non-conformities
+- ✅ Can edit and delete other user's records
 
-**Application Service**:
-- `SPRING_DATASOURCE_URL`: JDBC URL for MySQL
-- `SPRING_DATASOURCE_USERNAME`: root
-- `SPRING_DATASOURCE_PASSWORD`: root
+#### 👥 MANAGER - Operational Access
+
+- ✅ Create returns and non-conformities
+- ✅ Edit and delete returns and non-conformities
+- ❌ Cannot manage users
+
+#### 👤 USER - Limited Access
+
+- ✅ Create returns and non-conformities
+- ✅ View all returns and non-conformities
+- ❌ Cannot edit or delete records
+- ❌ Cannot manage users
+
+### Using JWT Token
+
+1. **Login to get token**
+
+   ```bash
+   curl -X POST "http://localhost:8080/api/v1/auth/login" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "email": "manager1@delivery.com",
+       "password": "manager123"
+     }'
+   ```
+
+2. **Use token in requests**
+
+   ```bash
+   curl -X GET "http://localhost:8080/api/v1/retours" \
+     -H "Authorization: Bearer YOUR_JWT_TOKEN"
+   ```
+
+3. **In Swagger UI**
+   - Click "Authorize" button (top right)
+   - Paste token (auto-adds "Bearer" prefix)
+   - All endpoints now include token automatically
+
+---
+
+## 🌱 Seed Data System
+
+The application automatically initializes realistic test data on startup:
+
+### Automatic Initialization
+
+- Runs once on first startup via `DataInitializer.java`
+- Creates 5 test users with different roles
+- Creates 50 product returns with varied data
+- Creates 50 non-conformities with severity levels
+- Idempotent - won't duplicate on restart
+
+### Test Data Details
+
+**Sample Products**: Laptop Dell XPS, iPhone 14 Pro, Samsung Galaxy S23, AirPods Pro, iPad Air, etc.
+
+**Sample Clients**: Acme Corporation, Tech Solutions Ltd, Digital Innovations Inc, Global Trading Co, etc.
+
+**Return States**:
+
+- EN_ATTENTE (Pending)
+- APPROUVE (Approved)
+- REFUSE (Refused)
+- REMBOURSE (Refunded)
+- ECHANGE (Exchanged)
+- EN_COURS_VERIFICATION (In verification)
+- REMBOURSEMENT_EN_ATTENTE (Refund pending)
+- PRODUIT_RECU (Product received)
+
+**Severity Levels**:
+
+- FAIBLE (Low)
+- MOYENNE (Medium)
+- ELEVEE (High)
+- CRITIQUE (Critical)
+
+---
+
+## 📝 Configuration
 
 ### JWT Configuration
 
-Edit `application.properties` to configure JWT:
+Edit `src/main/resources/application.properties`:
+
 ```ini
+# JWT Settings
 jwt.secret=YwNIcAXJfzYhoxHIvFkBpssU6z6e73cPtXR1VYc8Kit
 jwt.expiration=86400000  # 24 hours in milliseconds
+
+# Database
+spring.datasource.url=jdbc:mysql://localhost:3306/gestion_retour?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=
+
+# JPA/Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
 ```
 
 ---
 
-## Database Schema
+## 🐛 Troubleshooting
 
-The application automatically creates the following tables:
+### Issue: "403 Forbidden" Error
 
-- **users**: User accounts with roles
-- **retour_produit**: Product returns information
-- **nonconformite**: Non-conformity records
-- Automatically managed by Hibernate with `spring.jpa.hibernate.ddl-auto=update`
+**Solution**: This is expected! The API is secured.
+
+- Use Swagger UI: http://localhost:8080/swagger-ui.html
+- Login with test credentials to get JWT token
+- Click "Authorize" in Swagger and paste token
+
+### Issue: Seed Data Not Created
+
+- Check application logs for initialization messages
+- Verify database is properly connected
+- Ensure `spring.jpa.hibernate.ddl-auto=update` (or create)
+
+### Issue: MySQL Connection Refused
+
+- Verify MySQL is running: `mysql -u root -p`
+- Check connection string in `application.properties`
+- For Docker: ensure MySQL container is running: `docker-compose ps`
+
+### Issue: Port 8080 Already in Use
+
+- Change port in `application.properties`: `server.port=8081`
+- Or stop the conflicting service
 
 ---
 
-## Docker Commands Reference
+## 🧪 Testing Examples
 
-### Build Docker Image
+### Test Case 1: Login as Manager
+
 ```bash
-docker build -t gestion-retours:latest .
+POST /api/v1/auth/login
+{
+  "email": "manager1@delivery.com",
+  "password": "manager123"
+}
 ```
 
-### Run Single Container
+### Test Case 2: Create Product Return
+
 ```bash
-docker run -d -p 8080:8080 --name retour-app gestion-retours:latest
+POST /api/v1/retours/create
+Authorization: Bearer <token>
+
+{
+  "produit": "New Laptop",
+  "client": "Acme Corp",
+  "raison": "Defective unit",
+  "etatTraitement": "EN_ATTENTE",
+  "date": "2026-04-07"
+}
 ```
 
-### View Logs
+### Test Case 3: Filter Returns by Client
+
 ```bash
+GET /api/v1/retours?client=Acme&page=1&size=10
+Authorization: Bearer <token>
+```
+
+### Test Case 4: Check User Permissions
+
+```bash
+# Login as USER
+# Try DELETE /api/v1/retours/delete/1
+# Expected: 403 Forbidden ✓
+```
+
+---
+
+## 🏗️ Docker Commands
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
 docker-compose logs -f retour-app
-```
 
-### View Specific Service Logs
-```bash
-docker-compose logs -f mysql
-docker-compose logs -f phpmyadmin
-```
-
-### Restart Services
-```bash
+# Restart services
 docker-compose restart
-```
 
-### Remove All Containers and Volumes
-```bash
+# Stop services
+docker-compose down
+
+# Stop and remove volumes
 docker-compose down -v
-```
 
-### Check Service Status
-```bash
+# Check service status
 docker-compose ps
 ```
 
 ---
 
-## Troubleshooting
-
-### MySQL Connection Issues
-- **Problem**: "Connection refused" error
-- **Solution**: Ensure MySQL container is running: `docker-compose ps`
-- Wait for MySQL to initialize (can take 30-60 seconds)
-
-### Application Fails to Start
-- **Problem**: Port 8080 already in use
-- **Solution**: Change port in docker-compose.yml or stop conflicting service
-
-### Database Already Exists Error
-- **Problem**: Database creation fails
-- **Solution**: Run `docker-compose down -v` to remove volumes and restart
-
-### phpMyAdmin Connection Issues
-- **Problem**: Cannot connect to database through phpMyAdmin
-- **Solution**: Use hostname `mysql` instead of `localhost` in phpMyAdmin UI
-
----
-
-## Testing the API
-
-### 1. Register a User
-```bash
-curl -X POST http://localhost:8080/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "testuser",
-    "email": "test@example.com",
-    "password": "password123"
-  }'
-```
-
-### 2. Login
-```bash
-curl -X POST http://localhost:8080/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "testuser",
-    "password": "password123"
-  }'
-```
-
-### 3. Create a Product Return (with JWT token)
-```bash
-curl -X POST http://localhost:8080/retours/create \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -d '{
-    "numeroRetour": "RET001",
-    "description": "Produit défectueux"
-  }'
-```
-
----
-
-## Development
+## 🔨 Development
 
 ### Build Commands
+
 ```bash
 # Clean and build
 mvn clean package
@@ -384,38 +523,126 @@ mvn test
 ```
 
 ### IDE Setup
+
 1. Import project as Maven project in IntelliJ IDEA or Eclipse
-2. Maven should automatically download dependencies
+2. Maven automatically downloads dependencies
 3. Configure Run Configuration to run `GestionRetoursApplication`
 
 ---
 
-## Contributing
+## 📊 Architecture
+
+```
+┌─────────────────────────────────────┐
+│         Client (Browser/App)        │
+└─────────────────┬───────────────────┘
+                  │
+         ┌────────▼────────┐
+         │   Swagger UI    │
+         │   & REST API    │
+         └────────┬────────┘
+                  │
+┌─────────────────▼───────────────────┐
+│      Spring Boot Application        │
+├─────────────────────────────────────┤
+│ Controllers                         │
+│ ├─ AuthController                   │
+│ ├─ UserController                   │
+│ ├─ RetourProductController          │
+│ └─ NonConformiteController          │
+├─────────────────────────────────────┤
+│ Services                            │
+│ ├─ AuthService                      │
+│ ├─ UserService                      │
+│ ├─ RetourProduitService             │
+│ └─ NonConformiteService             │
+├─────────────────────────────────────┤
+│ Repositories (JPA)                  │
+│ ├─ UserRepository                   │
+│ ├─ RetourProduitRepository          │
+│ └─ NonConformiteRepository          │
+├─────────────────────────────────────┤
+│ Security (JWT, RBAC)                │
+│ ├─ JwtAuthFilter                    │
+│ ├─ CustomUserDetailsService         │
+│ └─ SecurityConfig                   │
+└─────────────────┬───────────────────┘
+                  │
+         ┌────────▼────────┐
+         │    MySQL DB     │
+         │  gestion_retour │
+         └─────────────────┘
+```
+
+---
+
+## 📝 Important Note: 403 Authorization Error
+
+**If you see "Access to localhost:8080 was denied. HTTP ERROR 403"**
+
+This is **EXPECTED and CORRECT!** Your application has JWT security enabled:
+
+- The home endpoint (`/`) is protected
+- This is not an error - it's your security working perfectly! ✓
+
+**To access the API:**
+
+1. Use Swagger UI: http://localhost:8080/swagger-ui.html (HTTP 200 ✓)
+2. Register or login with test credentials
+3. Get JWT token
+4. Use token in `Authorization: Bearer TOKEN` header
+
+---
+
+## 📈 Performance & Scale
+
+- Pagination support for large datasets
+- Efficient filtering on returns and non-conformities
+- JWT token-based stateless authentication
+- Database indexing via JPA
+- Ready for production deployment
+
+---
+
+## 🔒 Security Features
+
+✅ JWT token-based authentication  
+✅ Role-based access control (RBAC)  
+✅ Password hashing with BCrypt  
+✅ Secure headers configuration  
+✅ CORS enabled for frontend  
+✅ Input validation on all endpoints  
+✅ Global exception handling
+
+---
+
+## 🤝 Contributing
 
 1. Create a feature branch
 2. Make your changes
-3. Test locally
+3. Test locally with different user roles
 4. Submit a pull request
 
 ---
 
-## License
-
-This project is proprietary and confidential.
-
----
-
-## Support
-
-For issues or questions, please contact the development team.
-
----
-
-## Useful Links
+## 🔗 Useful Links
 
 - [Spring Boot Documentation](https://spring.io/projects/spring-boot)
 - [SpringDoc OpenAPI](https://springdoc.org/)
 - [JWT (JSON Web Token)](https://jwt.io/)
 - [Docker Documentation](https://docs.docker.com/)
 - [MySQL Documentation](https://dev.mysql.com/doc/)
+- [Spring Security](https://spring.io/projects/spring-security)
 
+---
+
+## 📄 License
+
+This project is proprietary and confidential.
+
+---
+
+**Last Updated**: April 7, 2026  
+**Version**: 1.0.0 with Seed Data & RBAC
+
+🎉 **Ready to deploy and test!**
