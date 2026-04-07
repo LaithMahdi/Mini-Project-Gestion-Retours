@@ -37,6 +37,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 // Auth routes are versioned by ApiConfig (/api/v1/**), keep whitelist aligned.
                                 "/api/v1/auth/**",
+                                "/",
+                                "/index",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs",
