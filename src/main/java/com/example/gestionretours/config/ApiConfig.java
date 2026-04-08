@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @Configuration
+@RequiredArgsConstructor
 @OpenAPIDefinition(
         info = @Info(
                 title = "Gestion Retours API",
@@ -34,6 +36,8 @@ import org.springframework.web.bind.annotation.RestController;
 )
 public class ApiConfig implements WebMvcConfigurer {
 
+    private final CorsProperties corsProperties;
+
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer.addPathPrefix("/api/v1",
@@ -44,11 +48,12 @@ public class ApiConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000")
-                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
+                .allowedOrigins(corsProperties.getAllowedOriginsArray())
+                .allowedMethods(corsProperties.getAllowedMethodsArray())
+                .allowedHeaders(corsProperties.getAllowedHeadersArray())
+                .exposedHeaders(corsProperties.getExposedHeadersArray())
+                .allowCredentials(corsProperties.isAllowCredentials())
+                .maxAge(corsProperties.getMaxAge());
     }
 
     @Bean

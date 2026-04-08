@@ -73,11 +73,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // Skip filter for Swagger & Auth endpoints
+    // Skip filter for Swagger & Auth endpoints, and OPTIONS requests (CORS preflight)
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
 
         String path = request.getServletPath();
+        String method = request.getMethod();
+
+        // Skip OPTIONS requests for CORS preflight
+        if ("OPTIONS".equalsIgnoreCase(method)) {
+            return true;
+        }
 
         return path.startsWith("/swagger-ui")
                 || path.equals("/swagger-ui.html")
