@@ -1,6 +1,8 @@
 package com.example.gestionretours.controllers;
 
 import com.example.gestionretours.config.ApiResponse;
+import com.example.gestionretours.config.PaginatedApiResponse;
+import com.example.gestionretours.config.PaginatedResponse;
 import com.example.gestionretours.dto.AdminCreateUserRequest;
 import com.example.gestionretours.dto.UpdateUserRequest;
 import com.example.gestionretours.dto.UserResponse;
@@ -50,9 +52,22 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
-        return ResponseEntity.ok(
-                ApiResponse.success("Liste des utilisateurs", userService.getAllUsers()));
+    public ResponseEntity<PaginatedApiResponse<UserResponse>> getAllUsers(
+            @RequestParam(required = false) String nom,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Role role,
+            @RequestParam(required = false) Boolean enabled,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        UserFilter filter = new UserFilter(nom, email, role, enabled);
+        PaginatedResponse<UserResponse> response = userService.getAllUsersWithFilterAndPagination(filter, page, size);
+        PaginatedApiResponse<UserResponse> paginatedApiResponse = new PaginatedApiResponse<>(
+                true,
+                "Liste des utilisateurs",
+                response.getData(),
+                response.getEdgeInfo()
+        );
+        return ResponseEntity.ok(paginatedApiResponse);
     }
 
     @GetMapping("/{id}")
@@ -76,22 +91,5 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);
         return ResponseEntity.ok(ApiResponse.success("Utilisateur supprimé", null));
-    }
-
-    @GetMapping("/role/{role}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getUsersByRole(
-            @PathVariable Role role) {
-        return ResponseEntity.ok(
-                ApiResponse.success("Utilisateurs par rôle", userService.getUsersByRole(role)));
-    }
-
-    @GetMapping("/search")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<List<UserResponse>>> searchByNom(
-            @RequestParam String nom) {
-
-        return ResponseEntity.ok(
-                ApiResponse.success("Résultats de la recherche", userService.searchByNom(nom)));
     }
 }

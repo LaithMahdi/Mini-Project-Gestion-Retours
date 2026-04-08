@@ -44,4 +44,8 @@ public class RetourProduit {
     @OneToMany(mappedBy = "produit", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<NonConformite> nonConformites;
+
+    @OneToMany(mappedBy = "retour", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<HistoriqueRetour> historiques;
 }
