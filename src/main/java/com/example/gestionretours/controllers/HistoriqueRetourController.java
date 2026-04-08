@@ -1,6 +1,8 @@
 package com.example.gestionretours.controllers;
 
 import com.example.gestionretours.config.ApiResponse;
+import com.example.gestionretours.config.PaginatedApiResponse;
+import com.example.gestionretours.config.PaginatedResponse;
 import com.example.gestionretours.dto.HistoriqueRetourCreateRequest;
 import com.example.gestionretours.dto.HistoriqueRetourResponse;
 import com.example.gestionretours.dto.HistoriqueRetourUpdateRequest;
@@ -67,14 +69,23 @@ public class HistoriqueRetourController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<ApiResponse<List<HistoriqueRetourResponse>>> getAll() {
-        List<HistoriqueRetour> historiques = service.findAll();
-        List<HistoriqueRetourResponse> responseData = historiques.stream()
+    public ResponseEntity<PaginatedApiResponse<HistoriqueRetourResponse>> getAll(
+            @RequestParam(required = false) Long retourId,
+            @RequestParam(required = false) String action,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        HistoriqueRetourFilter filter = new HistoriqueRetourFilter(retourId, action);
+        PaginatedResponse<HistoriqueRetour> response = service.findAllWithFilterAndPagination(filter, page, size);
+        List<HistoriqueRetourResponse> responseData = response.getData().stream()
                 .map(HistoriqueRetourResponse::fromEntity)
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(
-                ApiResponse.success("All historique retours fetched successfully", responseData)
+        PaginatedApiResponse<HistoriqueRetourResponse> paginatedApiResponse = new PaginatedApiResponse<>(
+                true,
+                "Historique retours fetched successfully",
+                responseData,
+                response.getEdgeInfo()
         );
+        return ResponseEntity.ok(paginatedApiResponse);
     }
 
     @GetMapping("/{id}")
