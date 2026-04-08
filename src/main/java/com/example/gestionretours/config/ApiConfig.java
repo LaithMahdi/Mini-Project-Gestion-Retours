@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
         info = @Info(
                 title = "Gestion Retours API",
                 version = "1.0.0",
-                description = "API for managing product returns and non-conformities"
+                description = "Comprehensive API for managing product returns, non-conformities, and user administration. " +
+                        "This API provides secure endpoints for tracking returned products, managing return status, " +
+                        "recording non-conformities, maintaining return history, and managing user accounts."
         )
 )
 @SecurityScheme(

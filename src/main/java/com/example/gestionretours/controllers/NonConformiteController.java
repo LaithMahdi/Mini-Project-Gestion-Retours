@@ -3,16 +3,22 @@ package com.example.gestionretours.controllers;
 import com.example.gestionretours.config.ApiResponse;
 import com.example.gestionretours.config.PaginatedApiResponse;
 import com.example.gestionretours.config.PaginatedResponse;
-import com.example.gestionretours.dto.NonConformiteDTO;
+import com.example.gestionretours.dto.NonConformiteCreateRequest;
+import com.example.gestionretours.dto.NonConformiteResponse;
+import com.example.gestionretours.dto.NonConformiteUpdateRequest;
 import com.example.gestionretours.entites.Gravite;
 import com.example.gestionretours.entites.NonConformite;
 import com.example.gestionretours.services.NonConformiteService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/non-conformites")
@@ -25,40 +31,55 @@ public class NonConformiteController {
 
     @PostMapping("/{produitId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<ApiResponse<NonConformite>> create(
+    public ResponseEntity<ApiResponse<NonConformiteResponse>> create(
             @PathVariable Long produitId,
-            @RequestBody NonConformite nc) {
+            @Valid @RequestBody NonConformiteCreateRequest request) {
 
-        return ResponseEntity.ok(
-                ApiResponse.success("Created successfully", service.create(nc, produitId))
-        );
+        NonConformite nc = NonConformite.builder()
+                .description(request.getDescription())
+                .gravite(request.getGravite())
+                .build();
+        NonConformite created = service.create(nc, produitId);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Non-conformité créée avec succès", NonConformiteResponse.fromEntity(created)));
     }
 
     @PatchMapping("/patch/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<ApiResponse<NonConformite>> patch(
+    public ResponseEntity<ApiResponse<NonConformiteResponse>> patch(
             @PathVariable Long id,
-            @RequestBody NonConformite nc) {
+            @RequestBody NonConformiteUpdateRequest request) {
 
+        NonConformite nc = NonConformite.builder()
+                .description(request.getDescription())
+                .gravite(request.getGravite())
+                .build();
+        NonConformite patched = service.patch(id, nc);
         return ResponseEntity.ok(
-                ApiResponse.success("Updated successfully", service.patch(id, nc))
+                ApiResponse.success("Non-conformité mise à jour avec succès", NonConformiteResponse.fromEntity(patched))
         );
     }
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
-    public ResponseEntity<ApiResponse<NonConformite>> update(
+    public ResponseEntity<ApiResponse<NonConformiteResponse>> update(
             @PathVariable Long id,
-            @RequestBody NonConformite nc) {
+            @Valid @RequestBody NonConformiteUpdateRequest request) {
 
+        NonConformite nc = NonConformite.builder()
+                .description(request.getDescription())
+                .gravite(request.getGravite())
+                .build();
+        NonConformite updated = service.update(id, nc);
         return ResponseEntity.ok(
-                ApiResponse.success("Updated successfully", service.update(id, nc))
+                ApiResponse.success("Non-conformité mise à jour avec succès", NonConformiteResponse.fromEntity(updated))
         );
     }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<PaginatedApiResponse<NonConformiteDTO>> getAll(
+    public ResponseEntity<PaginatedApiResponse<NonConformiteResponse>> getAll(
             @RequestParam(required = false) String produit,
             @RequestParam(required = false) Gravite gravite,
             @RequestParam(defaultValue = "1") int page,
@@ -69,14 +90,14 @@ public class NonConformiteController {
         PaginatedResponse<NonConformite> response =
                 service.findAllWithFilterAndPagination(filter, page, size);
 
-        java.util.List<NonConformiteDTO> dtoData = response.getData().stream()
-                .map(NonConformiteDTO::fromEntity)
+        List<NonConformiteResponse> dtoData = response.getData().stream()
+                .map(NonConformiteResponse::fromEntity)
                 .toList();
 
         return ResponseEntity.ok(
                 new PaginatedApiResponse<>(
                         true,
-                        "Fetched successfully",
+                        "Non-conformités récupérées avec succès",
                         dtoData,
                         response.getEdgeInfo()
                 )
@@ -85,10 +106,10 @@ public class NonConformiteController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'USER')")
-    public ResponseEntity<ApiResponse<NonConformiteDTO>> getById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<NonConformiteResponse>> getById(@PathVariable Long id) {
         NonConformite nc = service.getById(id);
         return ResponseEntity.ok(
-                ApiResponse.success("Fetched successfully", NonConformiteDTO.fromEntity(nc))
+                ApiResponse.success("Non-conformité récupérée avec succès", NonConformiteResponse.fromEntity(nc))
         );
     }
 
@@ -97,7 +118,7 @@ public class NonConformiteController {
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.ok(
-                ApiResponse.success("Deleted successfully", null)
+                ApiResponse.success("Non-conformité supprimée avec succès", null)
         );
     }
 }

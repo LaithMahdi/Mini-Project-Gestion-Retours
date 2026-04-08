@@ -1,6 +1,5 @@
 package com.example.gestionretours.services;
 
-import com.example.gestionretours.config.PaginatedResponse;
 import com.example.gestionretours.controllers.UserFilter;
 import com.example.gestionretours.dto.AdminCreateUserRequest;
 import com.example.gestionretours.dto.UpdateUserRequest;
@@ -11,7 +10,7 @@ import java.util.UUID;
 public interface UserService {
     UserResponse adminCreateUser(AdminCreateUserRequest request);
     List<UserResponse> getAllUsers();
-    PaginatedResponse<UserResponse> getAllUsersWithFilterAndPagination(UserFilter filter, int page, int size);
+    List<UserResponse> getAllUsersWithFilter(UserFilter filter);
     UserResponse getUserById(UUID id);
     UserResponse updateUser(UUID id, UpdateUserRequest request);
     void deleteUser(UUID id);

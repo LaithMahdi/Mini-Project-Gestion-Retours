@@ -1,6 +1,7 @@
 package com.example.gestionretours.config;
 
 import com.example.gestionretours.entites.*;
+import com.example.gestionretours.repos.HistoriqueRetourRepository;
 import com.example.gestionretours.repos.NonConformiteRepository;
 import com.example.gestionretours.repos.RetourProduitRepository;
 import com.example.gestionretours.repos.UserRepository;
@@ -9,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final RetourProduitRepository retourProduitRepository;
     private final NonConformiteRepository nonConformiteRepository;
+    private final HistoriqueRetourRepository historiqueRetourRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -32,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private void initializeDefaultAdmin() {
         String adminEmail = "admin@delivery.com";
-        
+
         if (userRepository.findByEmail(adminEmail).isPresent()) {
             log.info("✓ Default admin user already exists: {}", adminEmail);
             return;
@@ -58,26 +60,30 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         log.info("🌱 Initializing seed data...");
-        
+
         // Create 2 Manager users
         createManagers();
-        
+
         // Create 2 Regular users
         createRegularUsers();
-        
+
         // Create 50 Product Returns
         List<RetourProduit> retours = createProductReturns();
-        
+
         // Create 50 Non-Conformities
         createNonConformities(retours);
-        
+
+        // Create 10 Return History records
+        List<User> users = getUsersForHistory();
+        createReturnHistory(retours, users);
+
         log.info("✅ Seed data initialization completed!");
     }
 
     private void createManagers() {
         String[] managers = {
-            "manager1@delivery.com",
-            "manager2@delivery.com"
+                "manager1@delivery.com",
+                "manager2@delivery.com"
         };
 
         for (int i = 0; i < managers.length; i++) {
@@ -97,8 +103,8 @@ public class DataInitializer implements CommandLineRunner {
 
     private void createRegularUsers() {
         String[] users = {
-            "user1@delivery.com",
-            "user2@delivery.com"
+                "user1@delivery.com",
+                "user2@delivery.com"
         };
 
         for (int i = 0; i < users.length; i++) {
@@ -118,36 +124,36 @@ public class DataInitializer implements CommandLineRunner {
 
     private List<RetourProduit> createProductReturns() {
         List<RetourProduit> retours = new ArrayList<>();
-        
+
         String[] products = {
-            "Laptop Dell XPS", "iPhone 14 Pro", "Samsung Galaxy S23", "AirPods Pro",
-            "iPad Air", "MacBook Pro", "Sony WH-1000XM5", "GoPro Hero 11",
-            "DJI Mini 3 Pro", "Apple Watch Series 8", "Canon EOS R6", "Nikon Z6 II",
-            "Sony A7IV", "Nintendo Switch", "PlayStation 5", "Xbox Series X"
+                "Laptop Dell XPS", "iPhone 14 Pro", "Samsung Galaxy S23", "AirPods Pro",
+                "iPad Air", "MacBook Pro", "Sony WH-1000XM5", "GoPro Hero 11",
+                "DJI Mini 3 Pro", "Apple Watch Series 8", "Canon EOS R6", "Nikon Z6 II",
+                "Sony A7IV", "Nintendo Switch", "PlayStation 5", "Xbox Series X"
         };
 
         String[] clients = {
-            "Acme Corporation", "Tech Solutions Ltd", "Digital Innovations Inc",
-            "Global Trading Co", "Premium Retail Group", "E-Commerce Plus",
-            "Business Solutions", "Corporate Supplies", "Enterprise Tech",
-            "Modern Systems"
+                "Acme Corporation", "Tech Solutions Ltd", "Digital Innovations Inc",
+                "Global Trading Co", "Premium Retail Group", "E-Commerce Plus",
+                "Business Solutions", "Corporate Supplies", "Enterprise Tech",
+                "Modern Systems"
         };
 
         String[] reasons = {
-            "Défaut de fabrication détecté",
-            "Produit endommagé lors de la livraison",
-            "Non conforme aux spécifications",
-            "Fonction ne fonctionne pas comme prévu",
-            "Emballage endommagé",
-            "Couleur ne correspond pas à la commande",
-            "Taille incorrecte",
-            "Produit défectueux sur réception",
-            "Problème technique suite à installation",
-            "Incompatibilité avec système existant"
+                "Défaut de fabrication détecté",
+                "Produit endommagé lors de la livraison",
+                "Non conforme aux spécifications",
+                "Fonction ne fonctionne pas comme prévu",
+                "Emballage endommagé",
+                "Couleur ne correspond pas à la commande",
+                "Taille incorrecte",
+                "Produit défectueux sur réception",
+                "Problème technique suite à installation",
+                "Incompatibilité avec système existant"
         };
 
         EtatTraitement[] etats = EtatTraitement.values();
-        
+
         for (int i = 1; i <= 50; i++) {
             RetourProduit retour = new RetourProduit();
             retour.setProduit(products[(i - 1) % products.length] + " #" + i);
@@ -156,46 +162,83 @@ public class DataInitializer implements CommandLineRunner {
             retour.setEtatTraitement(etats[(i - 1) % etats.length]);
             retour.setDate(LocalDate.now().minusDays((i - 1) % 30)); // Spread dates over last 30 days
             retour.setNonConformites(new ArrayList<>());
-            
+
             retours.add(retourProduitRepository.save(retour));
         }
-        
+
         log.info("  ✓ {} Product Returns created", retours.size());
         return retours;
     }
 
     private void createNonConformities(List<RetourProduit> retours) {
         String[] descriptions = {
-            "Composant électronique défectueux",
-            "Boîtier endommagé lors du transport",
-            "Câble d'alimentation détérioré",
-            "Écran avec pixels défectueux",
-            "Batterie ne charge pas correctement",
-            "Ventilateur bruyant ou défectueux",
-            "Connecteurs corrodés ou endommagés",
-            "Logiciel préinstallé corrompu",
-            "Clavier/Trackpad dysfonctionnel",
-            "Port USB ne reconnaît pas les appareils",
-            "Accumulation de poussière interne",
-            "Rayures sur la surface",
-            "Joint d'étanchéité compromis",
-            "Performance inférieure aux spécifications",
-            "Bruit anormal en fonctionnement"
+                "Composant électronique défectueux",
+                "Boîtier endommagé lors du transport",
+                "Câble d'alimentation détérioré",
+                "Écran avec pixels défectueux",
+                "Batterie ne charge pas correctement",
+                "Ventilateur bruyant ou défectueux",
+                "Connecteurs corrodés ou endommagés",
+                "Logiciel préinstallé corrompu",
+                "Clavier/Trackpad dysfonctionnel",
+                "Port USB ne reconnaît pas les appareils",
+                "Accumulation de poussière interne",
+                "Rayures sur la surface",
+                "Joint d'étanchéité compromis",
+                "Performance inférieure aux spécifications",
+                "Bruit anormal en fonctionnement"
         };
 
         Gravite[] gravites = Gravite.values();
-        
+
         for (int i = 1; i <= 50; i++) {
             NonConformite nc = NonConformite.builder()
                     .description(descriptions[(i - 1) % descriptions.length])
                     .gravite(gravites[(i - 1) % gravites.length])
                     .produit(retours.get((i - 1) % retours.size()))
                     .build();
-            
+
             nonConformiteRepository.save(nc);
         }
-        
+
         log.info("  ✓ 50 Non-Conformities created");
     }
-}
 
+    private List<User> getUsersForHistory() {
+        return userRepository.findAll().stream()
+                .filter(user -> !user.getRole().equals(Role.ADMIN))
+                .toList();
+    }
+
+    private void createReturnHistory(List<RetourProduit> retours, List<User> users) {
+        String[] actions = {
+                "Produit reçu et enregistré",
+                "Inspection initiale complétée",
+                "Analysé pour défauts",
+                "En cours de diagnostic technique",
+                "Approuvé pour remboursement",
+                "Rejeté - produit en bon état",
+                "Envoyé au dépôt de remplacement",
+                "Traitement des documents en cours",
+                "Confirmation de remboursement envoyée",
+                "Attente de collecte par client"
+        };
+
+        for (int i = 0; i < 10; i++) {
+            RetourProduit retour = retours.get(i % retours.size());
+            User employee = users.get(i % users.size());
+
+            HistoriqueRetour historique = HistoriqueRetour.builder()
+                    .retour(retour)
+                    .action(actions[i])
+                    .employe(employee)
+                    .date(LocalDateTime.now().minusDays(10 - i))
+                    .build();
+
+            historiqueRetourRepository.save(historique);
+        }
+
+        log.info("  ✓ 10 Return History records created");
+
+    }
+}

@@ -646,3 +646,4 @@ This project is proprietary and confidential.
 **Version**: 1.0.0 with Seed Data & RBAC
 
 🎉 **Ready to deploy and test!**
+

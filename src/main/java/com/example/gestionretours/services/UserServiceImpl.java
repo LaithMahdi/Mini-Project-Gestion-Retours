@@ -1,7 +1,5 @@
 package com.example.gestionretours.services;
 
-import com.example.gestionretours.config.EdgeInfo;
-import com.example.gestionretours.config.PaginatedResponse;
 import com.example.gestionretours.controllers.UserFilter;
 import com.example.gestionretours.dto.AdminCreateUserRequest;
 import com.example.gestionretours.dto.UpdateUserRequest;
@@ -74,40 +72,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
-    public PaginatedResponse<UserResponse> getAllUsersWithFilterAndPagination(UserFilter filter, int page, int size) {
+    public List<UserResponse> getAllUsersWithFilter(UserFilter filter) {
         List<User> allUsers = userRepository.findAll();
-        List<User> filteredUsers = allUsers.stream()
+        return allUsers.stream()
                 .filter(user -> filterByNom(user, filter.getNom()))
                 .filter(user -> filterByEmail(user, filter.getEmail()))
                 .filter(user -> filterByRole(user, filter.getRole()))
                 .filter(user -> filterByEnabled(user, filter.getEnabled()))
-                .collect(Collectors.toList());
-
-        // Calculate pagination
-        long totalItems = filteredUsers.size();
-        int totalPages = (int) Math.ceil((double) totalItems / size);
-
-        // Validate page number
-        if (page < 1) page = 1;
-        if (page > totalPages && totalPages > 0) page = totalPages;
-
-        // Get paginated data
-        int startIndex = (page - 1) * size;
-        int endIndex = Math.min(startIndex + size, (int) totalItems);
-        List<UserResponse> pageData = filteredUsers.subList(startIndex, endIndex)
-                .stream()
                 .map(UserResponse::from)
                 .collect(Collectors.toList());
-
-        // Create edge info
-        EdgeInfo edgeInfo = new EdgeInfo(
-                page < totalPages,
-                page > 1,
-                totalItems,
-                page
-        );
-
-        return new PaginatedResponse<>(pageData, edgeInfo);
     }
 
     private boolean filterByNom(User user, String nom) {

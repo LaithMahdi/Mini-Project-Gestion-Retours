@@ -27,7 +27,6 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtil           jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    // ─── Register (public, role = USER) ──────────────────────────────────────
 
     @Override
     public AuthResponse register(RegisterRequest request) {
@@ -51,11 +50,9 @@ public class AuthServiceImpl implements AuthService {
         return buildAuthResponse(token, user);
     }
 
-    // ─── Login ────────────────────────────────────────────────────────────────
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        // throws BadCredentialsException if wrong email/password (caught by GlobalExceptionHandler)
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -74,8 +71,6 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtUtil.generateToken(user);
         return buildAuthResponse(token, user);
     }
-
-    // ─── Helper ───────────────────────────────────────────────────────────────
 
     private AuthResponse buildAuthResponse(String token, User user) {
         return AuthResponse.builder()

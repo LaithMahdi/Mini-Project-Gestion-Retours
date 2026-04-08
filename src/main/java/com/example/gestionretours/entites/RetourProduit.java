@@ -3,12 +3,15 @@ package com.example.gestionretours.entites;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.*;
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name="retours")
 public class RetourProduit {
     @Id
