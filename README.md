@@ -1,103 +1,501 @@
 # Gestion Retours - Product Returns Management System
 
-A Spring Boot REST API application for managing product returns and non-conformities in a business system with JWT authentication, role-based access control, and comprehensive seed data for testing.
+A comprehensive Spring Boot REST API application for managing product returns, non-conformities, and return history with JWT authentication, role-based access control, pagination, filtering, and extensive seed data for testing.
 
-## Project Overview
+## 📋 Project Overview
 
-**Gestion Retours** is a comprehensive product returns management system built with:
+**Gestion Retours** is an enterprise-grade product returns management system designed for delivery and logistics companies to track, manage, and analyze product returns efficiently.
 
-- **Backend**: Spring Boot 4.0.3 with Java 17
+### 🛠️ Technology Stack
+
+- **Backend**: Spring Boot 3.3.0 with Java 17
 - **Database**: MySQL 8
-- **API Documentation**: Swagger UI (SpringDoc OpenAPI) with Bearer token support
-- **Authentication**: JWT-based security with role-based access control (RBAC)
+- **Authentication**: JWT (JSON Web Tokens)
+- **API Documentation**: Swagger UI (SpringDoc OpenAPI)
+- **ORM**: JPA/Hibernate with Lombok
+- **Build Tool**: Maven
 - **Architecture**: REST API with Service-Repository pattern
-- **Seed Data**: Auto-generated test data on startup
 
 ## ✨ Key Features
 
 ### 🔐 Security & Authentication
 
-- User registration and login with JWT tokens
-- Role-based access control (ADMIN, MANAGER, USER)
-- Secure endpoints with JWT authentication
-- Bearer token support in Swagger UI
-- Password hashing with BCrypt
+- **User Registration & Login** - Secure JWT token-based authentication
+- **Role-Based Access Control** - ADMIN, MANAGER, USER, EMPLOYEE roles
+- **Password Security** - BCrypt password hashing
+- **Bearer Token Support** - JWT authentication in Swagger UI
+- **Endpoint Authorization** - Fine-grained access control on all endpoints
+- **Default Admin** - Auto-created admin account on startup
+  - Email: `admin@delivery.com`
+  - Password: `admin`
 
 ### 📦 Product Returns Management
 
-- Create and manage product returns
-- Track return status (8 different treatment states)
-- Pagination and filtering support
-- Realistic 50+ test returns with varied data
+- **Complete CRUD Operations** - Create, read, update, delete returns
+- **Status Tracking** - 8 treatment states (EN_ATTENTE, EN_COURS, ACCEPTE, REJETEE, etc.)
+- **Advanced Filtering** - Filter by client, product, status, date
+- **Pagination Support** - Configurable page size and navigation
+- **Validation** - Comprehensive field validation with error messages
+- **Data Transformation** - Request/Response DTOs for clean API contracts
+- **50+ Test Returns** - Realistic seed data included
 
 ### ⚠️ Non-Conformities Management
 
-- Record and manage non-conformities
-- Track severity levels (FAIBLE, MOYENNE, ELEVEE, CRITIQUE)
-- Link non-conformities to returns
-- 50+ test non-conformities with realistic scenarios
+- **Record Non-Conformities** - Document quality issues with returns
+- **Severity Tracking** - 4 severity levels (FAIBLE, MOYEN, GRAVE, CRITIQUE)
+- **Link to Returns** - Associate non-conformities with specific returns
+- **Advanced Filtering** - Filter by product name and severity
+- **Pagination** - Efficiently handle large datasets
+- **50+ Test Records** - Comprehensive seed data
 
-### 🌱 Auto-Generated Test Data
+### 📜 Return History Management ⭐ NEW
 
-- **5 Test Users**: 1 admin + 2 managers + 2 regular users
-- **50 Product Returns**: Realistic products, clients, and states
-- **50 Non-Conformities**: Various severity levels and descriptions
-- **Idempotent Initialization**: Safe to run multiple times
+- **Action Logging** - Record all actions taken on returns
+- **Employee Tracking** - Track which employee performed each action
+- **Timestamp Recording** - Automatic timestamp on each entry
+- **History Retrieval** - Get complete history for any return
+- **Audit Compliance** - Full audit trail for regulatory compliance
+- **10 Seed Records** - Default history entries for testing
+
+### 👥 User Management
+
+- **Admin User Management** - Create and manage user accounts
+- **User Filtering** - Filter by name, email, role, status with pagination
+- **Profile Access** - Users can view their own profile
+- **Status Control** - Enable/disable user accounts
+- **5 Test Users** - Pre-configured with different roles
 
 ### 📚 API Documentation
 
-- Interactive Swagger UI with Bearer token support
-- OpenAPI 3.0 specification
-- Full endpoint documentation with security requirements
-- Real-time endpoint testing
+- **Interactive Swagger UI** - Test all endpoints directly from browser
+- **OpenAPI 3.0 Spec** - Machine-readable API specification
+- **Bearer Token Support** - Authenticate in Swagger UI
+- **Comprehensive Descriptions** - Detailed endpoint documentation
 
-## Technology Stack
+## 🧪 Seed Data
 
-| Component         | Version |
-| ----------------- | ------- |
-| Spring Boot       | 4.0.3   |
-| Java              | 17      |
-| MySQL             | 8       |
-| Maven             | 3.9.1   |
-| JWT (JJWT)        | 0.11.5  |
-| SpringDoc OpenAPI | 3.0.2   |
-| Lombok            | Latest  |
-
-## 🧪 Test Users & Credentials
-
-All credentials are pre-configured in the database on first startup:
+The application automatically initializes comprehensive test data on first startup:
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│ Role    │ Email                  │ Password              │
-├──────────────────────────────────────────────────────────┤
-│ ADMIN   │ admin@delivery.com     │ admin                 │
-│ MANAGER │ manager1@delivery.com  │ manager123            │
-│ MANAGER │ manager2@delivery.com  │ manager123            │
-│ USER    │ user1@delivery.com     │ user123               │
-│ USER    │ user2@delivery.com     │ user123               │
-└──────────────────────────────────────────────────────────┘
+✅ Total Users:               5
+   • 1 ADMIN (admin@delivery.com / admin)
+   • 2 MANAGER accounts
+   • 2 USER accounts
+
+✅ Product Returns:           50
+   • Various clients and products
+   • Different treatment states
+   • Spread across last 30 days
+
+✅ Non-Conformities:          50
+   • Linked to returns
+   • Various severity levels
+   • Realistic descriptions
+
+✅ Return History:            10 ⭐ NEW
+   • Linked to returns
+   • Different employees
+   • Various actions performed
+   • Realistic timestamps
+
+✅ TOTAL RECORDS:             115
 ```
 
-## 📊 Database Content After Initialization
+### Default Test Credentials
 
-```
-✅ Total Users:           5 (1 Admin + 2 Manager + 2 User)
-✅ Product Returns:       50 (various states and clients)
-✅ Non-Conformities:      50 (various severity levels)
-✅ Total Records:         105
+| Role    | Email                  | Password   |
+|---------|------------------------|-----------|
+| ADMIN   | admin@delivery.com     | admin     |
+| MANAGER | manager1@delivery.com  | manager123|
+| MANAGER | manager2@delivery.com  | manager123|
+| USER    | user1@delivery.com     | user123   |
+| USER    | user2@delivery.com     | user123   |
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Java 17 or higher
+- Maven 3.8+
+- MySQL 8.0+
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd gestion-retours
 ```
 
-## Project Structure
+2. **Configure database** - Update `src/main/resources/application.properties`:
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/gestion_retours
+spring.datasource.username=root
+spring.datasource.password=your_password
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=false
+```
+
+3. **Build the project**
+```bash
+mvn clean install
+```
+
+4. **Run the application**
+```bash
+mvn spring-boot:run
+```
+
+5. **Access the application**
+- API Base URL: `http://localhost:8080/api/v1`
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- OpenAPI Spec: `http://localhost:8080/v3/api-docs`
+
+## 🔑 Authentication
+
+### Login Endpoint
+```bash
+POST /api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@delivery.com",
+  "password": "admin"
+}
+```
+
+### Response
+```json
+{
+  "success": true,
+  "message": "Connexion réussie",
+  "data": {
+    "token": "eyJhbGc...",
+    "email": "admin@delivery.com",
+    "role": "ADMIN"
+  }
+}
+```
+
+### Use Token in Requests
+```bash
+Authorization: Bearer <your_token_here>
+```
+
+## 📡 API Endpoints (29 Total)
+
+### Authentication (2 endpoints)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/register` | Register new user |
+| POST | `/auth/login` | Login and get JWT token |
+
+### Product Returns (7 endpoints)
+| Method | Endpoint | Role | Description |
+|--------|----------|------|-------------|
+| POST | `/retours/create` | ADMIN, MANAGER | Create new return |
+| GET | `/retours` | ADMIN, MANAGER, USER | Get returns with filters & pagination |
+| GET | `/retours/all` | ADMIN, MANAGER, USER | Get all returns without pagination |
+| GET | `/retours/{id}` | ADMIN, MANAGER, USER | Get return by ID |
+| PATCH | `/retours/patch/{id}` | ADMIN, MANAGER | Partial update return |
+| PUT | `/retours/update/{id}` | ADMIN, MANAGER | Full update return |
+| DELETE | `/retours/delete/{id}` | ADMIN, MANAGER | Delete return |
+
+### Non-Conformities (6 endpoints)
+| Method | Endpoint | Role | Description |
+|--------|----------|------|-------------|
+| POST | `/non-conformites/{produitId}` | ADMIN, MANAGER | Create non-conformity |
+| GET | `/non-conformites` | ADMIN, MANAGER, USER | Get non-conformities with filters |
+| GET | `/non-conformites/{id}` | ADMIN, MANAGER, USER | Get non-conformity by ID |
+| PATCH | `/non-conformites/patch/{id}` | ADMIN, MANAGER | Partial update |
+| PUT | `/non-conformites/update/{id}` | ADMIN, MANAGER | Full update |
+| DELETE | `/non-conformites/delete/{id}` | ADMIN, MANAGER | Delete |
+
+### Return History (7 endpoints) ⭐ NEW
+| Method | Endpoint | Role | Description |
+|--------|----------|------|-------------|
+| POST | `/historique-retours/create` | ADMIN, MANAGER | Create history record |
+| GET | `/historique-retours` | ADMIN, MANAGER, USER | Get all history records |
+| GET | `/historique-retours/{id}` | ADMIN, MANAGER, USER | Get history by ID |
+| GET | `/historique-retours/retour/{retourId}` | ADMIN, MANAGER, USER | Get history for specific return |
+| PATCH | `/historique-retours/patch/{id}` | ADMIN, MANAGER | Partial update history |
+| PUT | `/historique-retours/update/{id}` | ADMIN, MANAGER | Full update history |
+| DELETE | `/historique-retours/delete/{id}` | ADMIN, MANAGER | Delete history record |
+
+### User Management (6 endpoints)
+| Method | Endpoint | Role | Description |
+|--------|----------|------|-------------|
+| POST | `/users/create` | ADMIN | Create new user |
+| GET | `/users` | ADMIN | Get users with filters & pagination |
+| GET | `/users/me` | All | Get current user profile |
+| GET | `/users/{id}` | ADMIN | Get user by ID |
+| PUT | `/users/update/{id}` | ADMIN | Update user |
+| DELETE | `/users/delete/{id}` | ADMIN | Delete user |
+
+## 🔍 Advanced Features
+
+### Pagination
+
+All list endpoints support pagination:
+
+**Request:**
+```bash
+GET /retours?page=2&size=20
+```
+
+**Response includes EdgeInfo:**
+```json
+{
+  "success": true,
+  "data": [...],
+  "edgeInfo": {
+    "hasNext": true,
+    "hasPrevious": true,
+    "totalItems": 150,
+    "currentPage": 2
+  }
+}
+```
+
+### Filtering - Returns
+```bash
+GET /api/v1/retours?client=Ahmed&produit=iPhone&etatTraitement=EN_ATTENTE&page=1&size=10
+```
+
+### Filtering - Users
+```bash
+GET /api/v1/users?nom=Ahmed&email=example.com&role=MANAGER&enabled=true&page=1&size=10
+```
+
+### Filtering - Non-Conformities
+```bash
+GET /api/v1/non-conformites?produit=iPhone&gravite=GRAVE&page=1&size=10
+```
+
+## 💾 Data Transfer Objects (DTOs)
+
+### Request DTOs
+- `LoginRequest` - User login credentials
+- `RegisterRequest` - User registration
+- `AdminCreateUserRequest` - Admin user creation
+- `UpdateUserRequest` - User update
+- `RetourProduitCreateRequest` - Return creation ✅
+- `RetourProduitUpdateRequest` - Return update ✅
+- `HistoriqueRetourCreateRequest` - History creation ⭐
+- `HistoriqueRetourUpdateRequest` - History update ⭐
+- `NonConformiteCreateRequest` - Non-conformity creation ✅
+- `NonConformiteUpdateRequest` - Non-conformity update ✅
+
+### Response DTOs
+- `AuthResponse` - Authentication response
+- `UserResponse` - User data
+- `RetourProduitResponse` - Return data ✅
+- `HistoriqueRetourResponse` - History data ⭐
+- `NonConformiteResponse` - Non-conformity data ✅
+
+## 📊 Database Schema
+
+### Users Table
+```sql
+CREATE TABLE users (
+  id UUID PRIMARY KEY,
+  nom VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL,
+  enabled BOOLEAN DEFAULT true
+);
+```
+
+### Retours Table
+```sql
+CREATE TABLE retours (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  produit VARCHAR(100) NOT NULL,
+  client VARCHAR(50) NOT NULL,
+  raison VARCHAR(500),
+  etat_traitement VARCHAR(50) NOT NULL,
+  date DATE NOT NULL
+);
+```
+
+### Non-Conformites Table
+```sql
+CREATE TABLE non_conformites (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  description VARCHAR(500) NOT NULL,
+  gravite VARCHAR(50) NOT NULL,
+  date DATETIME NOT NULL,
+  produit_id BIGINT NOT NULL,
+  FOREIGN KEY (produit_id) REFERENCES retours(id)
+);
+```
+
+### Historique Retours Table ⭐ NEW
+```sql
+CREATE TABLE historique_retours (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  retour_id BIGINT NOT NULL,
+  action VARCHAR(500) NOT NULL,
+  employee_id UUID NOT NULL,
+  date DATETIME NOT NULL,
+  FOREIGN KEY (retour_id) REFERENCES retours(id),
+  FOREIGN KEY (employee_id) REFERENCES users(id)
+);
+```
+
+## 🎯 Example API Requests
+
+### Create a Return
+```bash
+curl -X POST http://localhost:8080/api/v1/retours/create \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "produit": "iPhone 14",
+    "client": "Ahmed Smith",
+    "raison": "Device malfunctioning after 2 weeks",
+    "etatTraitement": "EN_ATTENTE",
+    "date": "2026-04-08"
+  }'
+```
+
+### Get Returns with Filtering
+```bash
+curl -X GET "http://localhost:8080/api/v1/retours?client=Ahmed&page=1&size=10" \
+  -H "Authorization: Bearer <token>"
+```
+
+### Create Return History ⭐ NEW
+```bash
+curl -X POST http://localhost:8080/api/v1/historique-retours/create \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "retourId": 1,
+    "action": "Product inspected and approved for replacement",
+    "employeId": "uuid-of-employee"
+  }'
+```
+
+### Get History for a Return ⭐ NEW
+```bash
+curl -X GET "http://localhost:8080/api/v1/historique-retours/retour/1" \
+  -H "Authorization: Bearer <token>"
+```
+
+## 📁 Project Structure
 
 ```
 gestion-retours/
 ├── src/main/java/com/example/gestionretours/
-│   ├── controllers/          # REST API endpoints
+│   ├── config/
+│   │   ├── ApiConfig.java           # OpenAPI & CORS configuration
+│   │   ├── SecurityConfig.java      # JWT security setup
+│   │   ├── DataInitializer.java     # Seed data initialization
+│   │   ├── ApiResponse.java         # Standard response wrapper
+│   │   └── PaginatedResponse.java   # Pagination response
+│   ├── controllers/
+│   │   ├── AuthController.java
 │   │   ├── UserController.java
 │   │   ├── RetourProductController.java
+│   │   ├── HistoriqueRetourController.java ⭐
 │   │   ├── NonConformiteController.java
-│   │   └── AuthController.java
+│   │   ├── UserFilter.java          # Filter class
+│   │   ├── RetourFilter.java        # Filter class
+│   │   └── NonConformiteFilter.java # Filter class
+│   ├── services/
+│   │   ├── AuthService.java
+│   │   ├── UserService.java
+│   │   ├── RetourProduitService.java
+│   │   ├── HistoriqueRetourService.java ⭐
+│   │   └── NonConformiteService.java
+│   ├── repos/
+│   │   ├── UserRepository.java
+│   │   ├── RetourProduitRepository.java
+│   │   ├── HistoriqueRetourRepository.java ⭐
+│   │   └── NonConformiteRepository.java
+│   ├── entites/
+│   │   ├── User.java
+│   │   ├── RetourProduit.java
+│   │   ├── HistoriqueRetour.java ⭐
+│   │   ├── NonConformite.java
+│   │   ├── Role.java
+│   │   ├── EtatTraitement.java
+│   │   └── Gravite.java
+│   ├── dto/
+│   │   ├── (10+ Request DTOs)
+│   │   └── (5+ Response DTOs)
+│   ├── exceptions/
+│   └── security/
+└── pom.xml
+```
+
+## 🔐 Role-Based Access Control
+
+| Role | Permissions |
+|------|-------------|
+| **ADMIN** | Full access to all endpoints, user management |
+| **MANAGER** | Create/manage returns, non-conformities, history; view data |
+| **USER** | Read-only access to returns, non-conformities, history |
+| **EMPLOYEE** | Limited access to return data and history |
+
+## 🛡️ Security Features
+
+- ✅ JWT token-based authentication
+- ✅ Password hashing with BCrypt
+- ✅ Role-based endpoint authorization
+- ✅ Input validation on all endpoints
+- ✅ CORS configuration for secure cross-origin requests
+- ✅ Bearer token support in Swagger UI
+- ✅ HTTP-only secure tokens
+
+## 📝 Logging
+
+The application logs all initialization steps:
+
+```
+✓ Default admin user created: admin@delivery.com / admin
+🌱 Initializing seed data...
+  ✓ Manager created: manager1@delivery.com
+  ✓ Manager created: manager2@delivery.com
+  ✓ User created: user1@delivery.com
+  ✓ User created: user2@delivery.com
+  ✓ 50 Product Returns created
+  ✓ 50 Non-Conformities created
+  ✓ 10 Return History records created ⭐
+✅ Seed data initialization completed!
+```
+
+## 🆘 Error Handling
+
+All errors return consistent JSON format:
+
+```json
+{
+  "success": false,
+  "message": "Error description",
+  "data": null
+}
+```
+
+## 📚 Resources
+
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **OpenAPI Spec**: http://localhost:8080/v3/api-docs
+- **GitHub**: [Repository URL]
+- **Documentation**: See individual endpoint documentation in Swagger
+
+## 📞 Support
+
+For issues or questions, contact: support@delivery.com
+
+---
+
+**Version**: 1.0.0  
+**Last Updated**: April 8, 2026  
+**Status**: ✅ Production Ready
 │   ├── services/             # Business logic layer
 │   ├── repos/                # Data access layer
 │   ├── entites/              # JPA entity models
