@@ -5,6 +5,7 @@ import com.example.gestionretours.dto.AdminCreateUserRequest;
 import com.example.gestionretours.dto.UpdateUserRequest;
 import com.example.gestionretours.dto.PartialUpdateUserRequest;
 import com.example.gestionretours.dto.UserResponse;
+import com.example.gestionretours.dto.UserSimpleResponse;
 import com.example.gestionretours.entites.User;
 import com.example.gestionretours.repos.UserRepository;
 import com.example.gestionretours.config.PaginatedResponse;
@@ -113,6 +114,49 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         // Convert to response DTOs
         List<UserResponse> pageDataResponse = pageData.stream()
                 .map(UserResponse::from)
+                .collect(Collectors.toList());
+
+        // Create edge info
+        EdgeInfo edgeInfo = new EdgeInfo(
+                page < totalPages,
+                page > 1,
+                totalItems,
+                page
+        );
+
+        return new PaginatedResponse<>(pageDataResponse, edgeInfo);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserSimpleResponse> getAllUsersSimple() {
+        return userRepository.findAll()
+                .stream()
+                .map(UserSimpleResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PaginatedResponse<UserSimpleResponse> getAllUsersSimpleWithPagination(int page, int size) {
+        List<User> allUsers = userRepository.findAll();
+
+        // Calculate pagination
+        long totalItems = allUsers.size();
+        int totalPages = (int) Math.ceil((double) totalItems / size);
+
+        // Validate page number
+        if (page < 1) page = 1;
+        if (page > totalPages && totalPages > 0) page = totalPages;
+
+        // Get paginated data
+        int startIndex = (page - 1) * size;
+        int endIndex = Math.min(startIndex + size, (int) totalItems);
+        List<User> pageData = allUsers.subList(startIndex, endIndex);
+
+        // Convert to simple response DTOs (id, nom, role only)
+        List<UserSimpleResponse> pageDataResponse = pageData.stream()
+                .map(UserSimpleResponse::from)
                 .collect(Collectors.toList());
 
         // Create edge info

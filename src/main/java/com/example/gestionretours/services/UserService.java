@@ -5,6 +5,7 @@ import com.example.gestionretours.dto.AdminCreateUserRequest;
 import com.example.gestionretours.dto.UpdateUserRequest;
 import com.example.gestionretours.dto.PartialUpdateUserRequest;
 import com.example.gestionretours.dto.UserResponse;
+import com.example.gestionretours.dto.UserSimpleResponse;
 import com.example.gestionretours.config.PaginatedResponse;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +15,8 @@ public interface UserService {
     List<UserResponse> getAllUsers();
     List<UserResponse> getAllUsersWithFilter(UserFilter filter);
     PaginatedResponse<UserResponse> getAllUsersWithFilterAndPagination(UserFilter filter, int page, int size);
+    PaginatedResponse<UserSimpleResponse> getAllUsersSimpleWithPagination(int page, int size);
+    List<UserSimpleResponse> getAllUsersSimple();
     UserResponse getUserById(UUID id);
     UserResponse updateUser(UUID id, UpdateUserRequest request);
     UserResponse partialUpdateUser(UUID id, PartialUpdateUserRequest request);

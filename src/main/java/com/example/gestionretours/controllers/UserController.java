@@ -7,6 +7,7 @@ import com.example.gestionretours.dto.AdminCreateUserRequest;
 import com.example.gestionretours.dto.UpdateUserRequest;
 import com.example.gestionretours.dto.PartialUpdateUserRequest;
 import com.example.gestionretours.dto.UserResponse;
+import com.example.gestionretours.dto.UserSimpleResponse;
 import com.example.gestionretours.entites.Role;
 import com.example.gestionretours.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -40,6 +41,13 @@ public class UserController {
             @AuthenticationPrincipal UserDetails userDetails) {
         UserResponse profile = userService.getMyProfile(userDetails.getUsername());
         return ResponseEntity.ok(ApiResponse.success("Profil récupéré", profile));
+    }
+
+    @GetMapping("/all")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<ApiResponse<List<UserSimpleResponse>>> getAllUsersSimple() {
+        List<UserSimpleResponse> users = userService.getAllUsersSimple();
+        return ResponseEntity.ok(ApiResponse.success("Liste de tous les utilisateurs", users));
     }
 
     @PostMapping("/create")

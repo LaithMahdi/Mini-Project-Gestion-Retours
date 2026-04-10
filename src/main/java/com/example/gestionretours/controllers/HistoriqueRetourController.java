@@ -35,11 +35,7 @@ public class HistoriqueRetourController {
     @PostMapping("/create")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResponse<HistoriqueRetourResponse>> create(@Valid @RequestBody HistoriqueRetourCreateRequest request) {
-        HistoriqueRetour historique = HistoriqueRetour.builder()
-                .action(request.getAction())
-                .date(request.getDate())
-                .build();
-        HistoriqueRetour savedHistorique = service.save(historique);
+        HistoriqueRetour savedHistorique = service.create(request);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Historique retour created successfully", HistoriqueRetourResponse.fromEntity(savedHistorique)));
@@ -48,22 +44,14 @@ public class HistoriqueRetourController {
     @PatchMapping("/patch/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResponse<HistoriqueRetourResponse>> patch(@PathVariable Long id, @RequestBody HistoriqueRetourUpdateRequest request) {
-        HistoriqueRetour historique = HistoriqueRetour.builder()
-                .action(request.getAction())
-                .date(request.getDate())
-                .build();
-        HistoriqueRetour updatedHistorique = service.patch(id, historique);
+        HistoriqueRetour updatedHistorique = service.patchWithRelations(id, request);
         return ResponseEntity.ok(ApiResponse.success("Historique retour updated successfully", HistoriqueRetourResponse.fromEntity(updatedHistorique)));
     }
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public ResponseEntity<ApiResponse<HistoriqueRetourResponse>> put(@PathVariable Long id, @Valid @RequestBody HistoriqueRetourUpdateRequest request) {
-        HistoriqueRetour historique = HistoriqueRetour.builder()
-                .action(request.getAction())
-                .date(request.getDate())
-                .build();
-        HistoriqueRetour updatedHistorique = service.update(id, historique);
+        HistoriqueRetour updatedHistorique = service.updateWithRelations(id, request);
         return ResponseEntity.ok(ApiResponse.success("Historique retour updated successfully", HistoriqueRetourResponse.fromEntity(updatedHistorique)));
     }
 
