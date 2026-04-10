@@ -61,9 +61,26 @@ A comprehensive Spring Boot REST API application for managing product returns, n
 
 - **Admin User Management** - Create and manage user accounts
 - **User Filtering** - Filter by name, email, role, status with pagination
+- **Get All Users Simple** - New lightweight endpoint to get all users (id, nom, role) ⭐ NEW
 - **Profile Access** - Users can view their own profile
 - **Status Control** - Enable/disable user accounts
 - **5 Test Users** - Pre-configured with different roles
+
+## 🆕 Recent Updates (April 2026)
+
+### ✨ New Features
+- ⭐ **New Endpoint**: `/users/all` - Get all users in simplified format (id, nom, role) without pagination
+- ⭐ **New DTO**: `UserSimpleResponse` - Lightweight user response for list operations
+- ⭐ **Return History Fixes**: Corrected create, patch, and update operations to properly load relationships
+
+### 🔧 Improvements
+- Fixed validation errors in Return History creation by properly loading `retour` and `employe` entities
+- Enhanced `patchWithRelations()` and `updateWithRelations()` methods for better error handling
+- Improved data consistency in history management
+
+### 📊 Updated Endpoint Count
+- **Total Endpoints**: 30 (was 29)
+- **User Management**: 7 endpoints (was 6)
 
 ### 📚 API Documentation
 
@@ -183,7 +200,7 @@ Content-Type: application/json
 Authorization: Bearer <your_token_here>
 ```
 
-## 📡 API Endpoints (29 Total)
+## 📡 API Endpoints (30 Total) ⭐ UPDATED
 
 ### Authentication (2 endpoints)
 | Method | Endpoint | Description |
@@ -219,15 +236,18 @@ Authorization: Bearer <your_token_here>
 | GET | `/historique-retours` | ADMIN, MANAGER, USER | Get all history records |
 | GET | `/historique-retours/{id}` | ADMIN, MANAGER, USER | Get history by ID |
 | GET | `/historique-retours/retour/{retourId}` | ADMIN, MANAGER, USER | Get history for specific return |
-| PATCH | `/historique-retours/patch/{id}` | ADMIN, MANAGER | Partial update history |
-| PUT | `/historique-retours/update/{id}` | ADMIN, MANAGER | Full update history |
+| PATCH | `/historique-retours/patch/{id}` | ADMIN, MANAGER | Partial update history ✅ FIXED |
+| PUT | `/historique-retours/update/{id}` | ADMIN, MANAGER | Full update history ✅ FIXED |
 | DELETE | `/historique-retours/delete/{id}` | ADMIN, MANAGER | Delete history record |
 
-### User Management (6 endpoints)
+**Important**: The `create`, `patch`, and `update` endpoints now properly load related entities (`retour` and `employe`) from the database using their IDs to prevent validation errors.
+
+### User Management (7 endpoints) ⭐ UPDATED
 | Method | Endpoint | Role | Description |
 |--------|----------|------|-------------|
 | POST | `/users/create` | ADMIN | Create new user |
 | GET | `/users` | ADMIN | Get users with filters & pagination |
+| GET | `/users/all` | ADMIN | Get all users (id, nom, role) without pagination ⭐ NEW |
 | GET | `/users/me` | All | Get current user profile |
 | GET | `/users/{id}` | ADMIN | Get user by ID |
 | PUT | `/users/update/{id}` | ADMIN | Update user |
@@ -289,7 +309,8 @@ GET /api/v1/non-conformites?produit=iPhone&gravite=GRAVE&page=1&size=10
 
 ### Response DTOs
 - `AuthResponse` - Authentication response
-- `UserResponse` - User data
+- `UserResponse` - User data (full details)
+- `UserSimpleResponse` - User data (id, nom, role only) ⭐ NEW
 - `RetourProduitResponse` - Return data ✅
 - `HistoriqueRetourResponse` - History data ⭐
 - `NonConformiteResponse` - Non-conformity data ✅
@@ -383,6 +404,32 @@ curl -X POST http://localhost:8080/api/v1/historique-retours/create \
 ```bash
 curl -X GET "http://localhost:8080/api/v1/historique-retours/retour/1" \
   -H "Authorization: Bearer <token>"
+```
+
+### Get All Users (Simple List) ⭐ NEW
+```bash
+curl -X GET "http://localhost:8080/api/v1/users/all" \
+  -H "Authorization: Bearer <token>"
+```
+
+Response format:
+```json
+{
+  "success": true,
+  "message": "Liste de tous les utilisateurs",
+  "data": [
+    {
+      "id": "uuid-123",
+      "nom": "Manager User",
+      "role": "MANAGER"
+    },
+    {
+      "id": "uuid-456",
+      "nom": "Admin User",
+      "role": "ADMIN"
+    }
+  ]
+}
 ```
 
 ## 📁 Project Structure
@@ -493,8 +540,8 @@ For issues or questions, contact: support@delivery.com
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: April 8, 2026  
+**Version**: 1.0.1  
+**Last Updated**: April 10, 2026 ⭐ UPDATED
 **Status**: ✅ Production Ready
 │   ├── services/             # Business logic layer
 │   ├── repos/                # Data access layer
@@ -1040,8 +1087,8 @@ This project is proprietary and confidential.
 
 ---
 
-**Last Updated**: April 7, 2026  
-**Version**: 1.0.0 with Seed Data & RBAC
+**Last Updated**: April 10, 2026 ⭐ UPDATED  
+**Version**: 1.0.1 with User Management Improvements & Return History Fixes
 
 🎉 **Ready to deploy and test!**
 

@@ -99,6 +99,7 @@ public class HistoriqueRetourServiceImpl implements HistoriqueRetourService {
     }
 
     @Override
+    public List<HistoriqueRetour> findAll() {
         return repo.findAll();
     }
 

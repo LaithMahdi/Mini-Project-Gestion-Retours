@@ -3,6 +3,7 @@ package com.example.gestionretours.services;
 import com.example.gestionretours.config.PaginatedResponse;
 import com.example.gestionretours.controllers.HistoriqueRetourFilter;
 import com.example.gestionretours.dto.HistoriqueRetourCreateRequest;
+import com.example.gestionretours.dto.HistoriqueRetourUpdateRequest;
 import com.example.gestionretours.entites.HistoriqueRetour;
 
 import java.util.List;
