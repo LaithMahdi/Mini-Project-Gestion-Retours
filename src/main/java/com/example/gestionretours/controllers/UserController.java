@@ -5,6 +5,7 @@ import com.example.gestionretours.config.PaginatedApiResponse;
 import com.example.gestionretours.config.PaginatedResponse;
 import com.example.gestionretours.dto.AdminCreateUserRequest;
 import com.example.gestionretours.dto.UpdateUserRequest;
+import com.example.gestionretours.dto.PartialUpdateUserRequest;
 import com.example.gestionretours.dto.UserResponse;
 import com.example.gestionretours.entites.Role;
 import com.example.gestionretours.services.UserService;
@@ -85,6 +86,15 @@ public class UserController {
             @Valid @RequestBody UpdateUserRequest request) {
         UserResponse updated = userService.updateUser(id, request);
         return ResponseEntity.ok(ApiResponse.success("Utilisateur mis à jour", updated));
+    }
+
+    @PatchMapping("/patch/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<UserResponse>> partialUpdateUser(
+            @PathVariable UUID id,
+            @RequestBody PartialUpdateUserRequest request) {
+        UserResponse updated = userService.partialUpdateUser(id, request);
+        return ResponseEntity.ok(ApiResponse.success("Utilisateur partiellement mis à jour", updated));
     }
 
     @DeleteMapping("/delete/{id}")

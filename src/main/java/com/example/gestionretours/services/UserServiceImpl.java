@@ -3,6 +3,7 @@ package com.example.gestionretours.services;
 import com.example.gestionretours.controllers.UserFilter;
 import com.example.gestionretours.dto.AdminCreateUserRequest;
 import com.example.gestionretours.dto.UpdateUserRequest;
+import com.example.gestionretours.dto.PartialUpdateUserRequest;
 import com.example.gestionretours.dto.UserResponse;
 import com.example.gestionretours.entites.User;
 import com.example.gestionretours.repos.UserRepository;
@@ -181,6 +182,39 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         User saved = userRepository.save(user);
         log.info("Utilisateur mis à jour : {} ({})", saved.getEmail(), saved.getRole());
+        return UserResponse.from(saved);
+    }
+
+    @Override
+    public UserResponse partialUpdateUser(UUID id, PartialUpdateUserRequest request) {
+        User user = findById(id);
+
+        // Email uniqueness check if it changed
+        if (request.getEmail() != null && !user.getEmail().equals(request.getEmail())
+                && userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException(
+                    "L'email " + request.getEmail() + " est déjà utilisé par un autre compte");
+        }
+
+        // Update only the fields that are provided (non-null)
+        if (request.getNom() != null && !request.getNom().isBlank()) {
+            user.setNom(request.getNom());
+        }
+
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            user.setEmail(request.getEmail());
+        }
+
+        if (request.getRole() != null) {
+            user.setRole(request.getRole());
+        }
+
+        if (request.getEnabled() != null) {
+            user.setEnabled(request.getEnabled());
+        }
+
+        User saved = userRepository.save(user);
+        log.info("Utilisateur partiellement mis à jour : {} ({})", saved.getEmail(), saved.getRole());
         return UserResponse.from(saved);
     }
 
