@@ -1,6 +1,7 @@
 package com.example.gestionretours.controllers;
 
 import com.example.gestionretours.config.ApiResponse;
+import com.example.gestionretours.config.RetourApiErrorResponses;
 import com.example.gestionretours.config.PaginatedApiResponse;
 import com.example.gestionretours.config.PaginatedResponse;
 import com.example.gestionretours.dto.RetourProduitCreateRequest;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Tag(name = "Retour Produit API", description = "API for managing product returns")
 @SecurityRequirement(name = "bearerAuth")
+@RetourApiErrorResponses
 public class RetourProductController {
 
     private final RetourProduitService service;

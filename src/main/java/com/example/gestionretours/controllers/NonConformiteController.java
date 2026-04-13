@@ -1,6 +1,7 @@
 package com.example.gestionretours.controllers;
 
 import com.example.gestionretours.config.ApiResponse;
+import com.example.gestionretours.config.NonConformiteApiErrorResponses;
 import com.example.gestionretours.config.PaginatedApiResponse;
 import com.example.gestionretours.config.PaginatedResponse;
 import com.example.gestionretours.dto.NonConformiteCreateRequest;
@@ -25,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Non Conformite API", description = "API for managing non conformities related to product returns")
 @SecurityRequirement(name = "bearerAuth")
+@NonConformiteApiErrorResponses
 public class NonConformiteController {
 
     private final NonConformiteService service;

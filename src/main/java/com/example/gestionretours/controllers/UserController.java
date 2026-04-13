@@ -1,6 +1,7 @@
 package com.example.gestionretours.controllers;
 
 import com.example.gestionretours.config.ApiResponse;
+import com.example.gestionretours.config.UserApiErrorResponses;
 import com.example.gestionretours.config.PaginatedApiResponse;
 import com.example.gestionretours.config.PaginatedResponse;
 import com.example.gestionretours.dto.AdminCreateUserRequest;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Tag(name = "User API", description = "API for managing users")
 @SecurityRequirement(name = "bearerAuth")
+@UserApiErrorResponses
 public class UserController {
 
     private final UserService userService;

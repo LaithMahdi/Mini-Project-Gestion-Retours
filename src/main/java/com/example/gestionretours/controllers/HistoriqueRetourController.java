@@ -1,6 +1,7 @@
 package com.example.gestionretours.controllers;
 
 import com.example.gestionretours.config.ApiResponse;
+import com.example.gestionretours.config.HistoriqueRetourApiErrorResponses;
 import com.example.gestionretours.config.PaginatedApiResponse;
 import com.example.gestionretours.config.PaginatedResponse;
 import com.example.gestionretours.dto.HistoriqueRetourCreateRequest;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Tag(name = "Historique Retour API", description = "API for managing return history")
 @SecurityRequirement(name = "bearerAuth")
+@HistoriqueRetourApiErrorResponses
 public class HistoriqueRetourController {
 
     private final HistoriqueRetourService service;

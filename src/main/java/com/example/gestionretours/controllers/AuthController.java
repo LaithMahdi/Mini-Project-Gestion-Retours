@@ -1,6 +1,7 @@
 package com.example.gestionretours.controllers;
 
 import com.example.gestionretours.config.ApiResponse;
+import com.example.gestionretours.config.AuthApiErrorResponses;
 import com.example.gestionretours.dto.LoginRequest;
 import com.example.gestionretours.dto.RegisterRequest;
 import com.example.gestionretours.dto.AuthResponse;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @Tag(name = "Auth API", description = "API for authentication and user registration")
+@AuthApiErrorResponses
 public class AuthController {
 
     private final AuthService authService;
