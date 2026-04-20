@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Control } from "react-hook-form";
+import { Control, FieldPath, FieldValues } from "react-hook-form";
 import { useState } from "react";
 import { format } from "date-fns";
 import {
@@ -39,9 +39,9 @@ export enum FormFieldType {
   PASSWORD = "password",
 }
 
-interface CustomProps {
-  control: Control<any>;
-  name: string;
+interface CustomProps<TFieldValues extends FieldValues = FieldValues> {
+  control: Control<TFieldValues>;
+  name: FieldPath<TFieldValues>;
   label?: string;
   placeholder?: string;
   inputType?: React.HTMLInputTypeAttribute;
@@ -58,7 +58,13 @@ interface CustomProps {
   labelClassName?: string;
 }
 
-const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
+const RenderInput = <TFieldValues extends FieldValues = FieldValues>({
+  field,
+  props,
+}: {
+  field: any;
+  props: CustomProps<TFieldValues>;
+}) => {
   const [showPassword, setShowPassword] = useState<boolean>(true);
   const parsedDateValue =
     field.value instanceof Date
@@ -197,7 +203,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
             <Calendar
               mode="single"
               selected={safeDateValue}
-              onSelect={(date) =>
+              onSelect={(date: Date | undefined) =>
                 field.onChange(date ? format(date, "yyyy-MM-dd") : "")
               }
               disabled={props.disabled}
@@ -230,14 +236,16 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
   }
 };
 
-const CustomFormField = (props: CustomProps) => {
+const CustomFormField = <TFieldValues extends FieldValues = FieldValues>(
+  props: CustomProps<TFieldValues>,
+) => {
   const { control, name, label, labelChildren } = props;
 
   return (
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
+      render={({ field }: { field: any }) => (
         <FormItem className="flex-1">
           {props.fieldType !== FormFieldType.CHECKBOX && label && (
             <FormLabel
