@@ -17,8 +17,9 @@ import { useState } from "react";
 import { NonConformityDialog } from "./_components/NonConformityDialog";
 import NonConFormiteFilter from "./_components/NonConFormiteFilter";
 import { useSessionStore } from "@/stores/use_session_store";
+import { SearchParamsBoundary } from "@/components/shared/search-params-boundary";
 
-const page = () => {
+const NonConformityContent = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [page, setPage] = useSearchParamsState(
     "page",
@@ -57,7 +58,7 @@ const page = () => {
     currentUser?.role === "ADMIN" || currentUser?.role === "MANAGER";
 
   return (
-    <section className="min-h-screen flex flex-col items-start justify-start gap-3">
+    <>
       <PageHeader
         title="Non Conformités"
         totalItems={totalItems}
@@ -101,6 +102,16 @@ const page = () => {
         open={openDeleteDialog}
         onOpenChange={setOpenDeleteDialog}
       />
+    </>
+  );
+};
+
+const page = () => {
+  return (
+    <section className="min-h-screen flex flex-col items-start justify-start gap-3">
+      <SearchParamsBoundary>
+        <NonConformityContent />
+      </SearchParamsBoundary>
     </section>
   );
 };

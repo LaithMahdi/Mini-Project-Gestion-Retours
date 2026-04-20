@@ -7,11 +7,15 @@ import LandingHero from "./_components/landing/LandingHero";
 import LandingNavbar from "./_components/landing/LandingNavbar";
 import LandingStats from "./_components/landing/LandingStats";
 import FriendlyBackground from "@/components/shared/FriendlyBackground";
+import LandingThemeSwitcher from "./_components/LandingThemeSwitcher";
 
 const page = () => {
   return (
     <FriendlyBackground>
       <main className="min-h-screen overflow-x-clip">
+        <div className="fixed top-4 right-4 z-50">
+          <LandingThemeSwitcher />
+        </div>
         <LandingNavbar />
         <LandingHero />
         <LandingEntities />

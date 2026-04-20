@@ -63,7 +63,7 @@ const page = () => {
       }
 
       toast.success("Connexion réussie");
-      router.push("/manager");
+      router.push("/manager/returns");
     },
     onError: () => {
       toast.error("Erreur lors de la connexion");

@@ -15,8 +15,9 @@ import PageHeader from "@/components/shared/page-header";
 import ReturnsMonth from "./_components/ReturnsMonth";
 import ReturnsFilter from "./_components/ReturnsFilter";
 import { useSessionStore } from "@/stores/use_session_store";
+import { SearchParamsBoundary } from "@/components/shared/search-params-boundary";
 
-const Page = () => {
+const ReturnsContent = () => {
   const defaultMonth = new Date().getMonth() + 1;
 
   const [page, setPage] = useSearchParamsState(
@@ -86,7 +87,7 @@ const Page = () => {
     currentUser?.role === "ADMIN" || currentUser?.role === "MANAGER";
 
   return (
-    <section className="min-h-screen flex flex-col items-start justify-start gap-3">
+    <>
       <PageHeader
         title="Retours clients"
         totalItems={totalItems}
@@ -138,6 +139,16 @@ const Page = () => {
           items={(data?.data?.data as Item[]) || []}
         />
       </div>
+    </>
+  );
+};
+
+const Page = () => {
+  return (
+    <section className="min-h-screen flex flex-col items-start justify-start gap-3">
+      <SearchParamsBoundary>
+        <ReturnsContent />
+      </SearchParamsBoundary>
     </section>
   );
 };

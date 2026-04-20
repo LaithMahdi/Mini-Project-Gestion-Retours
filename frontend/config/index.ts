@@ -1,7 +1,7 @@
 export const NODE_ENV: string = process.env.NODE_ENV || "development";
 
 export const NEXT_PUBLIC_BASE_URL_API: string =
-  process.env.NEXT_PUBLIC_BASE_URL_API || "http://localhost:3000/api";
+  process.env.NEXT_PUBLIC_BASE_URL_API || "http://localhost:8080/api/v1";
 
 export const COOKIE_TOKEN_KEY: string = "auth_token";
 

@@ -18,8 +18,9 @@ import { useState } from "react";
 import { ViewMode } from "./_components/schema";
 import { toast } from "sonner";
 import UserFilter from "./_components/UserFilter";
+import { SearchParamsBoundary } from "@/components/shared/search-params-boundary";
 
-const Page = () => {
+const UsersContent = () => {
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<Item | undefined>();
   const queryClient = useQueryClient();
@@ -98,7 +99,7 @@ const Page = () => {
   };
 
   return (
-    <section className="min-h-screen flex flex-col items-start justify-start gap-3">
+    <>
       <PageHeader
         title="Mes utilisateurs"
         totalItems={totalItems}
@@ -142,6 +143,16 @@ const Page = () => {
         open={openEditDialog}
         onOpenChange={handleOpenChange}
       />
+    </>
+  );
+};
+
+const Page = () => {
+  return (
+    <section className="min-h-screen flex flex-col items-start justify-start gap-3">
+      <SearchParamsBoundary>
+        <UsersContent />
+      </SearchParamsBoundary>
     </section>
   );
 };

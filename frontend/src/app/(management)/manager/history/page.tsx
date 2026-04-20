@@ -11,8 +11,9 @@ import DataTableHistory from "./_components/DataTableHistory";
 import { useState } from "react";
 import HistoryDialog from "./_components/HistoryDialog";
 import { useSessionStore } from "@/stores/use_session_store";
+import { SearchParamsBoundary } from "@/components/shared/search-params-boundary";
 
-const page = () => {
+const HistoryContent = () => {
   const [page, setPage] = useSearchParamsState(
     "page",
     parseAsInteger.withDefault(1),
@@ -38,7 +39,7 @@ const page = () => {
   const canEdit =
     currentUser?.role === "ADMIN" || currentUser?.role === "MANAGER";
   return (
-    <section className="min-h-screen flex flex-col items-start justify-start gap-3">
+    <>
       <PageHeader
         title="Historique des retours"
         totalItems={totalItems}
@@ -67,6 +68,16 @@ const page = () => {
       </div>
 
       <HistoryDialog open={openEditDialog} onOpenChange={setOpenEditDialog} />
+    </>
+  );
+};
+
+const page = () => {
+  return (
+    <section className="min-h-screen flex flex-col items-start justify-start gap-3">
+      <SearchParamsBoundary>
+        <HistoryContent />
+      </SearchParamsBoundary>
     </section>
   );
 };

@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/button";
 export default function LandingCTA() {
   return (
     <section className="mx-auto max-w-7xl px-6 py-20">
-      <div className="rounded-3xl border border-cyan-300/25 bg-linear-to-r from-slate-900 via-slate-900 to-cyan-950/30 p-8 text-center sm:p-12">
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
+      <div className="rounded-3xl border border-cyan-300/25 bg-linear-to-r from-slate-100 dark:from-slate-900 via-slate-100 dark:via-slate-900 to-cyan-100/50 dark:to-cyan-950/30 p-8 text-center sm:p-12">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-300">
           Pret a accelerer
         </p>
-        <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-black text-white sm:text-4xl">
+        <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-black text-slate-900 dark:text-white sm:text-4xl">
           Passez d une gestion reactive a une gestion pilotee par la donnee
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-300 sm:text-base">
+        <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-600 dark:text-slate-300 sm:text-base">
           Connectez-vous et lancez vos operations de retour avec des workflows
           structurés, des permissions claires et une experience equipe fluide.
         </p>
@@ -20,14 +20,14 @@ export default function LandingCTA() {
           <Link href="/login">
             <Button
               size="lg"
-              className="rounded-full bg-cyan-500 px-8 font-semibold text-slate-950 hover:bg-cyan-400"
+              className="rounded-full bg-cyan-500 px-8 font-semibold text-white dark:text-slate-950 hover:bg-cyan-400"
             >
               Se connecter
             </Button>
           </Link>
           <a
             href="#entities"
-            className="inline-flex h-11 items-center rounded-full border border-slate-500 px-7 text-sm font-semibold text-white transition hover:border-slate-300 hover:bg-slate-800/70"
+            className="inline-flex h-11 items-center rounded-full border border-slate-300 dark:border-slate-500 px-7 text-sm font-semibold text-slate-900 dark:text-white transition hover:border-slate-400 dark:hover:border-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70"
           >
             Voir l architecture
           </a>
