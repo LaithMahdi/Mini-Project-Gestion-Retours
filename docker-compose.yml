@@ -1,14 +1,13 @@
 services:
-
   mysql:
     image: mysql:8
     container_name: mysql-retour
-    restart: always
+    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: gestion_retour
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
-      - "3307:3306"
+      - "${MYSQL_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -17,32 +16,48 @@ services:
       retries: 10
       interval: 5s
 
-  retour-app:
-    build: .
-    container_name: retour-app
-    restart: always
-    ports:
-      - "8080:8080"
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: retour-backend
+    restart: unless-stopped
     depends_on:
       mysql:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gestion_retour?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "${BACKEND_PORT}:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: retour-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      NEXT_PUBLIC_BASE_URL_API: ${NEXT_PUBLIC_BASE_URL_API}
+    ports:
+      - "${FRONTEND_PORT}:3000"
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin-doctor
-    restart: always
-    ports:
-      - "8088:80"
+    container_name: phpmyadmin-retour
+    restart: unless-stopped
+    depends_on:
+      - mysql
     environment:
       PMA_HOST: mysql
       PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: root
-    depends_on:
-      - mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "${PHPMYADMIN_PORT}:80"
 
 volumes:
   mysql_data:
