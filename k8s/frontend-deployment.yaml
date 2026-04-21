@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: gestion-retours-frontend:latest
+        imagePullPolicy: Never
+        env:
+          - name: NODE_ENV
+            value: production
+          - name: NEXT_PUBLIC_BASE_URL_API
+            value: http://localhost:8080/api/v1
+        ports:
+          - containerPort: 3000
