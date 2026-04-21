@@ -17,7 +17,7 @@ spec:
         image: mysql:8
         env:
           - name: MYSQL_ROOT_PASSWORD
-            value: change-me
+            value: root
           - name: MYSQL_DATABASE
             value: gestion_retour
         ports:

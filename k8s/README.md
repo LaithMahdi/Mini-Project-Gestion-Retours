@@ -83,6 +83,29 @@ Now open:
 - Frontend: http://localhost:3000
 - Backend Swagger: http://localhost:8080/swagger-ui.html
 
+Note: the frontend API base URL is `/api/v1` (same origin) and is proxied internally to backend service.
+
+Alternative (NodePort + Minikube IP):
+
+```bash
+MINIKUBE_IP=$(minikube ip)
+echo "Frontend: http://$MINIKUBE_IP:30876"
+echo "Backend Swagger: http://$MINIKUBE_IP:31473/swagger-ui.html"
+```
+
+If NodePorts are different, get them with:
+
+```bash
+kubectl get svc
+```
+
+You can also print service URLs directly:
+
+```bash
+minikube service frontend --url
+minikube service backend --url
+```
+
 ## 7) Useful commands
 
 Logs:
@@ -122,8 +145,18 @@ minikube delete
 
 ## Notes
 
-- Current DB password in manifests is `change-me`. For production, use Secrets.
+- Default MySQL credentials in Kubernetes manifests:
+	- Username: `root`
+	- Password: `root`
+	- Database: `gestion_retour`
+- For production, replace plaintext credentials with Kubernetes Secrets.
 - If images are rebuilt, rerun `docker build ...` and then restart deployments.
+- On first run, `mysql:8` can take time to pull and initialize. If backend starts early, it may crash with DB connection errors. Wait for MySQL to be `Running`, then restart backend:
+
+```bash
+kubectl rollout status deployment/mysql
+kubectl rollout restart deployment/backend
+```
 - If a Pod is stuck, check details:
 
 ```bash
