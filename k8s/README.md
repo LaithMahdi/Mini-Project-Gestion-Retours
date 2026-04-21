@@ -99,6 +99,8 @@ If NodePorts are different, get them with:
 kubectl get svc
 ```
 
+If you see `Invalid CORS request`, update `APP_CORS_ALLOWED_ORIGINS` in [k8s/backend-deployment.yaml](k8s/backend-deployment.yaml) to include your frontend URL (`http://<minikube-ip>:<frontend-nodeport>`), then apply and restart backend.
+
 You can also print service URLs directly:
 
 ```bash
