@@ -13,7 +13,6 @@ import {
   COOKIE_TOKEN_KEY,
   COOKIE_USER_ROLE_KEY,
   LOGIN_ENDPOINT,
-  NODE_ENV,
 } from "@/config";
 import { LoginApiResponse } from "./_components/interfaces";
 import { decodeJWT, getCookieExpiryDate } from "@/lib/utils";
@@ -35,10 +34,12 @@ const page = () => {
 
       return response.data.data;
     },
-    onSuccess: (data) => {
+    onSuccess: (data: LoginApiResponse["data"]) => {
       const user = data.user;
       const { exp } = decodeJWT(data.token);
       const cookieExpires = getCookieExpiryDate(exp);
+      const isHttps =
+        typeof window !== "undefined" && window.location.protocol === "https:";
 
       setLoggedIn(true);
       setCurrentUser({
@@ -51,14 +52,14 @@ const page = () => {
       Cookies.set(COOKIE_TOKEN_KEY, data.token, {
         expires: cookieExpires,
         sameSite: "lax",
-        secure: NODE_ENV === "production",
+        secure: isHttps,
       });
 
       if (user.role) {
         Cookies.set(COOKIE_USER_ROLE_KEY, user.role, {
           expires: cookieExpires,
           sameSite: "lax",
-          secure: NODE_ENV === "production",
+          secure: isHttps,
         });
       }
 
