@@ -124,6 +124,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Convert repository name to lowercase
+        run: echo "REPO_LOWER=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
@@ -137,8 +140,8 @@ jobs:
           context: ./backend
           push: true
           tags: |
-            ghcr.io/${{ github.repository | lower }}/backend:${{ github.sha }}
-            ghcr.io/${{ github.repository | lower }}/backend:prod
+            ghcr.io/${{ env.REPO_LOWER }}/backend:${{ github.sha }}
+            ghcr.io/${{ env.REPO_LOWER }}/backend:prod
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v6
@@ -146,8 +149,8 @@ jobs:
           context: ./frontend
           push: true
           tags: |
-            ghcr.io/${{ github.repository | lower }}/frontend:${{ github.sha }}
-            ghcr.io/${{ github.repository | lower }}/frontend:prod
+            ghcr.io/${{ env.REPO_LOWER }}/frontend:${{ github.sha }}
+            ghcr.io/${{ env.REPO_LOWER }}/frontend:prod
 
   deploy:
     name: Deploy to Google Cloud Run
@@ -163,6 +166,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Convert repository name to lowercase
+        run: echo "REPO_LOWER=${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -177,14 +183,14 @@ jobs:
 
       - name: Pull and retag backend image from GHCR
         run: |
-          docker pull ghcr.io/${{ github.repository | lower }}/backend:${{ github.sha }}
-          docker tag ghcr.io/${{ github.repository | lower }}/backend:${{ github.sha }} ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gestion-retours/backend:${{ github.sha }}
+          docker pull ghcr.io/${{ env.REPO_LOWER }}/backend:${{ github.sha }}
+          docker tag ghcr.io/${{ env.REPO_LOWER }}/backend:${{ github.sha }} ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gestion-retours/backend:${{ github.sha }}
           docker push ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gestion-retours/backend:${{ github.sha }}
 
       - name: Pull and retag frontend image from GHCR
         run: |
-          docker pull ghcr.io/${{ github.repository | lower }}/frontend:${{ github.sha }}
-          docker tag ghcr.io/${{ github.repository | lower }}/frontend:${{ github.sha }} ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gestion-retours/frontend:${{ github.sha }}
+          docker pull ghcr.io/${{ env.REPO_LOWER }}/frontend:${{ github.sha }}
+          docker tag ghcr.io/${{ env.REPO_LOWER }}/frontend:${{ github.sha }} ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gestion-retours/frontend:${{ github.sha }}
           docker push ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gestion-retours/frontend:${{ github.sha }}
 
       - name: Deploy backend to Cloud Run
