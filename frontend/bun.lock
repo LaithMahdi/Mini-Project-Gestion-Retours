@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "gestion_retours",
@@ -37,6 +38,7 @@
       },
       "devDependencies": {
         "@tailwindcss/postcss": "^4",
+        "@types/deep-eql": "^4.0.2",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",
