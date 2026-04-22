@@ -69,7 +69,7 @@ jobs:
         run: npm audit --audit-level=critical
 
       - name: Filesystem vulnerability scan (Trivy)
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.35.0 
         with:
           scan-type: fs
           scan-ref: .
@@ -90,7 +90,7 @@ jobs:
         run: docker build -t gestion-retours-frontend:ci ./frontend
 
       - name: Trivy backend image scan
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: gestion-retours-backend:ci
           format: table
@@ -99,7 +99,7 @@ jobs:
           exit-code: "1"
 
       - name: Trivy frontend image scan
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: gestion-retours-frontend:ci
           format: table
