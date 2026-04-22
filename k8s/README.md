@@ -143,6 +143,43 @@ Destroy Minikube cluster:
 minikube delete
 ```
 
+## 8) GitOps (ArgoCD)
+
+Manifests ArgoCD inclus:
+
+- `k8s/argocd/application.yaml`
+- `k8s/argocd/application-monitoring.yaml`
+
+Étapes:
+
+1. Mettre à jour `repoURL` avec le repo GitHub réel.
+2. Appliquer les manifests ArgoCD dans le namespace `argocd`.
+3. Laisser ArgoCD synchroniser automatiquement (`prune` + `selfHeal`).
+
+Après setup ArgoCD, aucun `kubectl apply` manuel n'est nécessaire pour les déploiements applicatifs ni pour le monitoring.
+
+## 9) Monitoring
+
+Stack incluse:
+
+- Prometheus
+- Grafana
+- règles d'alerting simple
+
+Déployer:
+
+```bash
+kubectl apply -f k8s/monitoring/namespace.yaml
+kubectl apply -f k8s/monitoring/
+```
+
+Accès:
+
+```bash
+minikube service prometheus -n monitoring --url
+minikube service grafana -n monitoring --url
+```
+
 ---
 
 ## Notes
