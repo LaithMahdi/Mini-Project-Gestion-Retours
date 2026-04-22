@@ -6,7 +6,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 import FriendlyBackground from "@/components/shared/FriendlyBackground";
 
-const page = () => {
+const UnauthorizedPage = () => {
   const router = useRouter();
   return (
     <FriendlyBackground>
@@ -15,11 +15,11 @@ const page = () => {
           <div className="mb-8">
             <div className="text-7xl font-semibold text-rose-500 mb-4">403</div>
             <h1 className="text-4xl font-semibold text-slate-900 dark:text-white mb-2">
-              Acces refuse
+              Accès refusé
             </h1>
             <p className="text-slate-600 dark:text-slate-300 text-lg">
-              Vous n'avez pas les permissions necessaires pour acceder a cette
-              ressource.
+              Vous n&apos;avez pas les permissions nécessaires pour accéder à
+              cette ressource.
             </p>
           </div>
 
@@ -31,9 +31,9 @@ const page = () => {
 
           <div className="mb-10 rounded-3xl border border-white/70 bg-white/80 p-6 text-left shadow-[0_25px_80px_-40px_rgba(15,23,42,0.35)] backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
             <p className="text-slate-700 dark:text-slate-200 text-sm">
-              Votre role utilisateur n'inclut pas les permissions requises pour
-              acceder a cette section. Contactez votre administrateur si vous
-              pensez que c'est une erreur.
+              Votre rôle utilisateur n&apos;inclut pas les permissions requises
+              pour accéder à cette section. Contactez votre administrateur si
+              vous pensez que c&apos;est une erreur.
             </p>
           </div>
 
@@ -42,7 +42,7 @@ const page = () => {
               className="rounded-full bg-sky-600 text-white shadow-lg shadow-sky-500/25 transition hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400"
               onClick={() => router.push("/")}
             >
-              Retour a l'accueil
+              Retour à l&apos;accueil
             </Button>
             <Button
               variant="outline"
@@ -54,7 +54,7 @@ const page = () => {
           </div>
 
           <div className="mt-8 pt-6 text-sm text-slate-500 dark:text-slate-300">
-            Besoin d'aide?
+            Besoin d&apos;aide?
             <a
               href="mailto:support@retourpro.com"
               className="ml-1 font-medium text-sky-600 transition hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
@@ -68,4 +68,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default UnauthorizedPage;

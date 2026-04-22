@@ -60,7 +60,7 @@ export function NonConformityDialog(props: Props) {
         gravite: item?.gravite ?? "FAIBLE",
       });
     }
-  }, [item]);
+  }, [item, form]);
 
   const { data: productsData, isLoading: isLoadingProducts } =
     useQuery<RetourDataType>({

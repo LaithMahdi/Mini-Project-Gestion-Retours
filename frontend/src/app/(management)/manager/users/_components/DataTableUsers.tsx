@@ -28,47 +28,12 @@ type Props = {
 };
 
 export default function DataTableUsers(props: Props) {
-  const {
-    items,
-    view,
-    onViewChange,
-    onEdit,
-    onDelete,
-    isLoading,
-    paginationProps,
-  } = props;
+  const { items, view, onEdit, onDelete, isLoading, paginationProps } = props;
 
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [categoriesToDelete, setCategoriesToDelete] = useState<Item[]>([]);
-  const [resetSelection, setResetSelection] = useState(false);
+  const [, setSelectedIds] = useState<string[]>([]);
 
   const onSelectedRowsChange = useCallback((rows: Item[]) => {
     setSelectedIds(rows.map((item) => item.id.toString()));
-  }, []);
-
-  const onSelectedCardsChange = useCallback((ids: string[]) => {
-    setSelectedIds(ids);
-  }, []);
-
-  const handleDeleteSelected = useCallback((rows: Item[]) => {
-    setCategoriesToDelete(rows);
-    setShowDeleteDialog(true);
-  }, []);
-
-  const handleDeleteSuccess = useCallback(() => {
-    setSelectedIds([]);
-    setCategoriesToDelete([]);
-    setResetSelection(true);
-    setTimeout(() => setResetSelection(false), 100);
-  }, []);
-
-  const handleDialogOpenChange = useCallback((open: boolean) => {
-    setShowDeleteDialog(open);
-    if (!open) {
-      setCategoriesToDelete([]);
-    }
   }, []);
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import {
   Sheet,
@@ -15,13 +15,18 @@ import { DashboardSquare03Icon } from "@hugeicons/core-free-icons";
 
 const MobileSidebar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [openForPath, setOpenForPath] = useState<string | null>(null);
   const pathname = usePathname();
 
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+  const effectivelyOpen = isOpen && openForPath === pathname;
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) setOpenForPath(pathname);
+  };
+
   return (
-    <Sheet modal={false} open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet modal={false} open={effectivelyOpen} onOpenChange={handleOpenChange}>
       <SheetTrigger asChild>
         <Button
           size="icon"

@@ -12,7 +12,6 @@ import {
 import { Item } from "./types";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { MoreHorizontalIcon } from "@hugeicons/core-free-icons";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSessionStore } from "@/stores/use_session_store";
 import { NonConformityDialog } from "./NonConformityDialog";
@@ -24,7 +23,6 @@ interface Props {
 
 const MoreButton = (props: Props) => {
   const { item } = props;
-  const router = useRouter();
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openEditDialog, setOpenEditDialog] = useState<boolean>(false);
   const { currentUser } = useSessionStore();

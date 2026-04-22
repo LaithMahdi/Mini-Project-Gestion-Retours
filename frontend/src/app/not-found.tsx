@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import FriendlyBackground from "@/components/shared/FriendlyBackground";
 
-const page = () => {
+const NotFoundPage = () => {
   const router = useRouter();
 
   return (
@@ -30,8 +30,8 @@ const page = () => {
           </h1>
 
           <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-            Desole, la page que vous recherchez n'existe pas ou a ete deplacee.
-            Verifiez l'URL et reessayez.
+            Désolé, la page que vous recherchez n&apos;existe pas ou a été
+            déplacée. Vérifiez l&apos;URL et réessayez.
           </p>
 
           <div className="rounded-3xl border border-white/70 bg-white/80 p-6 text-left shadow-[0_25px_80px_-40px_rgba(15,23,42,0.35)] backdrop-blur dark:border-white/10 dark:bg-slate-900/70">
@@ -44,21 +44,21 @@ const page = () => {
                   icon={CheckmarkBadge03Icon}
                   className="size-5 text-sky-500"
                 />
-                Verifiez l'URL pour les erreurs de frappe
+                Vérifiez l&apos;URL pour les erreurs de frappe
               </li>
               <li className="flex items-center gap-2">
                 <HugeiconsIcon
                   icon={CheckmarkBadge03Icon}
                   className="size-5 text-sky-500"
                 />
-                Verifiez que vous avez les permissions d'acces
+                Vérifiez que vous avez les permissions d&apos;accès
               </li>
               <li className="flex items-center gap-2">
                 <HugeiconsIcon
                   icon={CheckmarkBadge03Icon}
                   className="size-5 text-sky-500"
                 />
-                Retournez a l'accueil et naviguez a nouveau
+                Retournez à l&apos;accueil et naviguez à nouveau
               </li>
             </ul>
           </div>
@@ -68,7 +68,7 @@ const page = () => {
               className="rounded-full bg-sky-600 text-white shadow-lg shadow-sky-500/25 transition hover:bg-sky-500 dark:bg-sky-500 dark:hover:bg-sky-400"
               onClick={() => router.push("/")}
             >
-              Retour a l'accueil
+              Retour à l&apos;accueil
             </Button>
             <Button
               variant="outline"
@@ -80,7 +80,7 @@ const page = () => {
           </div>
 
           <div className="mt-10 pt-6 text-sm text-slate-500 dark:text-slate-300">
-            Besoin d'aide?{" "}
+            Besoin d&apos;aide?{" "}
             <a
               href="mailto:support@retourpro.com"
               className="font-medium text-sky-600 transition hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
@@ -94,4 +94,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default NotFoundPage;

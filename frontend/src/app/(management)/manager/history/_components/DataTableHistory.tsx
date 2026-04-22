@@ -25,7 +25,7 @@ export default function DataTableHistory({
   paginationProps,
   isLoading,
 }: Props) {
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [, setSelectedIds] = useState<string[]>([]);
 
   const onSelectedRowsChange = useCallback((rows: Item[]) => {
     setSelectedIds(rows.map((item) => item.id.toString()));

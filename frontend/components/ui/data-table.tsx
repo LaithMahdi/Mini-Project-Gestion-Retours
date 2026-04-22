@@ -21,6 +21,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  Row,
 } from "@tanstack/react-table";
 import { ReactNode, useEffect, useState } from "react";
 import AdvancedPagination from "./advanced-pagination";
@@ -52,7 +53,15 @@ export type DataTableProps<TData> = {
   initialColumnVisibility?: VisibilityState;
 };
 
-export function DataTable<TData>({
+// A minimal constraint: rows must have an optional `id` that can be stringified
+type WithId = { id?: string | number | null };
+
+// Helper function to extract ID from a row
+function getRowId<TData extends WithId>(row: TData): string {
+  return row?.id?.toString() ?? Math.random().toString();
+}
+
+export function DataTable<TData extends WithId>({
   showColumnsFilter = false,
   data,
   moduleColor,
@@ -87,7 +96,7 @@ export function DataTable<TData>({
     getSubRows,
     onExpandedChange: setExpanded,
     enableRowSelection: true,
-    getRowId: (row: any) => row?.id?.toString(),
+    getRowId: (row: TData) => getRowId(row),
     onRowSelectionChange: setRowSelection,
     state: {
       sorting,
@@ -100,9 +109,9 @@ export function DataTable<TData>({
 
   useEffect(() => {
     const selectedItems = Object.entries(rowSelection)
-      .filter(([_, selected]) => selected)
+      .filter(([, selected]) => selected) // ← removed unused `_`
       .map(([id]) => {
-        const row = data.find((item: any) => item?.id?.toString() === id);
+        const row = data.find((item: TData) => item?.id?.toString() === id);
         return row as TData;
       })
       .filter(Boolean);
@@ -116,7 +125,7 @@ export function DataTable<TData>({
     const skeletonRows = Array(5).fill(null);
     return (
       <>
-        {skeletonRows.map((_, index) => (
+        {skeletonRows.map((_, index: number) => (
           <TableRow key={index} className={`animate-pulse ${moduleColor}`}>
             {columns.map((column, cellIndex) => (
               <TableCell key={cellIndex} className="p-4">
@@ -185,7 +194,7 @@ export function DataTable<TData>({
             {isLoading ? (
               <LoadingSkeleton />
             ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row: Row<TData>) => (
                 <TableRow
                   key={row.id}
                   className={cn(`transition-colors relative ${moduleColor}`, {
@@ -220,14 +229,12 @@ export function DataTable<TData>({
         </Table>
         <div className="h-16 border-t border-sky-500/20 flex">
           <div className="flex items-center justify-between w-full px-5">
-            {/* if advanced is not defined the pagination will use next and previous buttons  */}
             {!paginationProps?.advanced && paginationProps && (
               <NextAndPreviousButtons
                 className="ml-auto"
                 {...paginationProps}
               />
             )}
-
             {paginationProps?.advanced !== undefined && (
               <AdvancedPagination
                 ModulePaginationColor={ModulePaginationColor}

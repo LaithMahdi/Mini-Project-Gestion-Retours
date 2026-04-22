@@ -36,7 +36,10 @@ const Navbar = () => {
       </div>
 
       <div className="flex flex-1 justify-end pl-2">
-        <AvatarDropdown email={currentUser?.email!} name={currentUser?.role!} />
+        <AvatarDropdown
+          email={currentUser?.email ?? ""}
+          name={currentUser?.role ?? ""}
+        />
       </div>
     </nav>
   );

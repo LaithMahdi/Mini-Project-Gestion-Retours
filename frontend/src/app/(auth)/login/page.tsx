@@ -17,7 +17,7 @@ import {
 import { LoginApiResponse } from "./_components/interfaces";
 import { decodeJWT, getCookieExpiryDate } from "@/lib/utils";
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const { setLoggedIn, setCurrentUser } = useSessionStore();
 
@@ -88,7 +88,7 @@ const page = () => {
           </h1>
           <p className="mt-4 max-w-xl text-base text-slate-600 dark:text-slate-300">
             Un espace clair et convivial pour suivre vos retours, gagner du
-            temps et garder une vue d'ensemble sur chaque dossier.
+            temps et garder une vue d&apos;ensemble sur chaque dossier.
           </p>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
@@ -112,7 +112,7 @@ const page = () => {
               o
             </span>
             Connectez-vous pour reprendre votre activite exactement la ou vous
-            l'avez laissee.
+            l&apos;avez laissee.
           </div>
         </section>
 
@@ -123,8 +123,8 @@ const page = () => {
               isLoading={loginMutation.isPending}
             />
             <div className="mt-6 rounded-2xl border border-slate-200/80 bg-slate-50 px-4 py-3 text-sm text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-              Besoin d aide ? Contactez votre responsable pour reinitialiser
-              votre acces.
+              Besoin d&apos;aide ? Contactez votre responsable pour
+              reinitialiser votre acces.
             </div>
           </div>
         </section>
@@ -133,4 +133,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

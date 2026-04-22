@@ -21,14 +21,14 @@ import {
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
+import { cn, toDate } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Calendar01Icon,
   ViewIcon,
   ViewOffIcon,
 } from "@hugeicons/core-free-icons";
-
+import { ControllerRenderProps } from "react-hook-form";
 export enum FormFieldType {
   INPUT = "input",
   TEXTAREA = "textarea",
@@ -51,7 +51,9 @@ interface CustomProps<TFieldValues extends FieldValues = FieldValues> {
   dateFormat?: string;
   showTimeSelect?: boolean;
   children?: React.ReactNode;
-  renderSkeleton?: (field: any) => React.ReactNode;
+  renderSkeleton?: (
+    field: ControllerRenderProps<TFieldValues, FieldPath<TFieldValues>>,
+  ) => React.ReactNode;
   fieldType: FormFieldType;
   labelChildren?: React.ReactNode;
   inputClassName?: string;
@@ -62,19 +64,14 @@ const RenderInput = <TFieldValues extends FieldValues = FieldValues>({
   field,
   props,
 }: {
-  field: any;
+  field: ControllerRenderProps<TFieldValues>;
   props: CustomProps<TFieldValues>;
 }) => {
   const [showPassword, setShowPassword] = useState<boolean>(true);
-  const parsedDateValue =
-    field.value instanceof Date
-      ? field.value
-      : field.value
-        ? new Date(field.value)
-        : undefined;
+  const parsedDateValue = toDate(field.value);
 
   const safeDateValue =
-    parsedDateValue && !Number.isNaN(parsedDateValue.getTime())
+    parsedDateValue && !isNaN(parsedDateValue.getTime())
       ? parsedDateValue
       : undefined;
 
@@ -245,7 +242,11 @@ const CustomFormField = <TFieldValues extends FieldValues = FieldValues>(
     <FormField
       control={control}
       name={name}
-      render={({ field }: { field: any }) => (
+      render={({
+        field,
+      }: {
+        field: ControllerRenderProps<TFieldValues, FieldPath<TFieldValues>>;
+      }) => (
         <FormItem className="flex-1">
           {props.fieldType !== FormFieldType.CHECKBOX && label && (
             <FormLabel

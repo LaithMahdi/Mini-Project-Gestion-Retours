@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Moon01Icon, Sun01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
@@ -16,33 +16,29 @@ const themeOptions: ThemeOption[] = [
   { value: "dark", label: "Sombre", icon: Moon01Icon },
 ];
 
-export default function LandingThemeSwitcher() {
-  const [currentTheme, setCurrentTheme] = useState<string | undefined>(
-    undefined,
-  );
-  const [mounted, setMounted] = useState(false);
+function getThemeSnapshot(): "light" | "dark" {
+  const saved = localStorage.getItem("theme");
+  if (saved === "light" || saved === "dark") return saved;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
 
-  useEffect(() => {
-    setMounted(true);
-    // Get initial theme from localStorage or system preference
-    const saved = localStorage.getItem("theme");
-    if (saved) {
-      setCurrentTheme(saved);
-      if (saved === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    } else {
-      // Check system preference
-      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const theme = isDark ? "dark" : "light";
-      setCurrentTheme(theme);
-      if (isDark) {
-        document.documentElement.classList.add("dark");
-      }
-    }
-  }, []);
+function getThemeServerSnapshot(): "light" | "dark" {
+  return "light";
+}
+
+function subscribeToTheme(callback: () => void): () => void {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+}
+
+export default function LandingThemeSwitcher() {
+  const currentTheme = useSyncExternalStore(
+    subscribeToTheme,
+    getThemeSnapshot,
+    getThemeServerSnapshot,
+  );
 
   const handleChangeTheme = (value: "light" | "dark") => {
     if (value === "dark") {
@@ -50,11 +46,9 @@ export default function LandingThemeSwitcher() {
     } else {
       document.documentElement.classList.remove("dark");
     }
-    setCurrentTheme(value);
     localStorage.setItem("theme", value);
+    window.dispatchEvent(new Event("storage"));
   };
-
-  if (!mounted) return null;
 
   return (
     <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm">

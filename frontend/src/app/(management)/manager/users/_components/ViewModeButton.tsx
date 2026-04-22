@@ -11,7 +11,6 @@ const ViewModeButton = (props: Props) => {
   return (
     <div className="flex gap-1 bg-gray-100 dark:bg-gray-900 p-1 rounded-lg border border-gray-200 dark:border-gray-700">
       {viewsModes.map((mode) => {
-        const IconComponent = mode.icon;
         const isActive = view === mode.value;
         return (
           <button
