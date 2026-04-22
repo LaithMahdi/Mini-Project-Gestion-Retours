@@ -198,8 +198,15 @@ jobs:
           service: gestion-retours-backend
           region: ${{ secrets.GCP_REGION }}
           image: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gestion-retours/backend:${{ github.sha }}
+          flags: --add-cloudsql-instances=${{ secrets.CLOUD_SQL_INSTANCE }}
           env_vars: |
             SPRING_PROFILES_ACTIVE=prod
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_USERNAME=${{ secrets.DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            CLOUD_SQL_INSTANCE=${{ secrets.CLOUD_SQL_INSTANCE }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
 
       - name: Deploy frontend to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
