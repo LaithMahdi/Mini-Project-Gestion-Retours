@@ -143,80 +143,46 @@ data:
           },
           "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 }
         },
-
         {
           "id": 4,
-          "title": "P99 Latency",
+          "title": "Request Rate Average (5m)",
           "type": "stat",
-          "description": "99th percentile response time over the last 5 minutes",
+          "description": "Average HTTP requests per minute over the last 5 minutes",
           "targets": [
             {
               "datasource": { "type": "prometheus" },
-              "expr": "histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket{job=\"backend\",uri!~\"/actuator.*\"}[5m])) by (le))",
+              "expr": "(sum(rate(http_server_requests_seconds_count{job=\"backend\",uri!~\"/actuator.*\"}[5m])) * 60) or vector(0)",
               "instant": true,
               "refId": "A"
             }
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "s",
-              "decimals": 3,
+              "unit": "short",
+              "decimals": 1,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  { "color": "green",  "value": null },
-                  { "color": "yellow", "value": 0.5 },
-                  { "color": "red",    "value": 1.0 }
+                  { "color": "blue", "value": null },
+                  { "color": "green", "value": 1 },
+                  { "color": "yellow", "value": 10 },
+                  { "color": "red", "value": 20 }
                 ]
               },
               "color": { "mode": "thresholds" }
             }
           },
           "options": {
-            "colorMode": "value",
-            "graphMode": "none",
+            "colorMode": "background",
+            "graphMode": "area",
+            "justifyMode": "center",
             "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
           },
-          "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 }
+          "gridPos": { "h": 4, "w": 4, "x": 0, "y": 20 }
         },
-
+      
         {
           "id": 5,
-          "title": "JVM Heap Used",
-          "type": "stat",
-          "description": "Current JVM heap memory used",
-          "targets": [
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "jvm_memory_used_bytes{job=\"backend\",area=\"heap\"}",
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "bytes",
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  { "color": "green",  "value": null },
-                  { "color": "yellow", "value": 300000000 },
-                  { "color": "red",    "value": 500000000 }
-                ]
-              },
-              "color": { "mode": "thresholds" }
-            }
-          },
-          "options": {
-            "colorMode": "value",
-            "graphMode": "area",
-            "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
-          },
-          "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 }
-        },
-
-        {
-          "id": 6,
           "title": "Active Threads",
           "type": "stat",
           "description": "Current number of live JVM threads",
@@ -251,7 +217,7 @@ data:
         },
 
         {
-          "id": 7,
+          "id": 6,
           "title": "Backend up",
           "type": "timeseries",
           "description": "Backend instance availability over time (1 = up, 0 = down)",
@@ -291,10 +257,10 @@ data:
         },
 
         {
-          "id": 8,
+          "id": 7,
           "title": "HTTP Request Rate",
           "type": "timeseries",
-          "description": "HTTP requests per minute (5-minute smoothed rate), max 50 req/min, excluding Spring Actuator endpoints",
+          "description": "HTTP requests per minute (5-minute smoothed rate), max 30 req/min, excluding Spring Actuator endpoints",
           "targets": [
             {
               "datasource": { "type": "prometheus" },
@@ -314,13 +280,13 @@ data:
               },
               "unit": "short",
               "min": 0,
-              "max": 50,
+              "max": 30,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   { "color": "green",  "value": null },
                   { "color": "yellow", "value": 25 },
-                  { "color": "red",    "value": 50 }
+                  { "color": "red",    "value": 30 }
                 ]
               }
             }
@@ -333,7 +299,7 @@ data:
         },
 
         {
-          "id": 9,
+          "id": 8,
           "title": "HTTP Error Rate (4xx / 5xx)",
           "type": "timeseries",
           "description": "Rate of client and server-side HTTP errors per second",
@@ -373,282 +339,6 @@ data:
           "gridPos": { "h": 8, "w": 9, "x": 15, "y": 4 }
         },
 
-        {
-          "id": 10,
-          "title": "Response Time Percentiles",
-          "type": "timeseries",
-          "description": "P50, P95, P99 response latency over the last 5 minutes",
-          "targets": [
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "histogram_quantile(0.50, sum(rate(http_server_requests_seconds_bucket{job=\"backend\",uri!~\"/actuator.*\"}[5m])) by (le))",
-              "legendFormat": "p50",
-              "refId": "A"
-            },
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket{job=\"backend\",uri!~\"/actuator.*\"}[5m])) by (le))",
-              "legendFormat": "p95",
-              "refId": "B"
-            },
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket{job=\"backend\",uri!~\"/actuator.*\"}[5m])) by (le))",
-              "legendFormat": "p99",
-              "refId": "C"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "custom": { "lineWidth": 2, "fillOpacity": 5, "showPoints": "never" },
-              "unit": "s",
-              "min": 0
-            },
-            "overrides": [
-              { "matcher": { "id": "byName", "options": "p50" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green"  } }] },
-              { "matcher": { "id": "byName", "options": "p95" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } }] },
-              { "matcher": { "id": "byName", "options": "p99" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } }] }
-            ]
-          },
-          "options": {
-            "tooltip": { "mode": "multi", "sort": "desc" },
-            "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
-          },
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 }
-        },
-
-        {
-          "id": 11,
-          "title": "JVM Memory Usage",
-          "type": "timeseries",
-          "description": "JVM heap and non-heap memory usage over time",
-          "targets": [
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "jvm_memory_used_bytes{job=\"backend\",area=\"heap\"}",
-              "legendFormat": "Heap used",
-              "refId": "A"
-            },
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "jvm_memory_max_bytes{job=\"backend\",area=\"heap\"}",
-              "legendFormat": "Heap max",
-              "refId": "B"
-            },
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "jvm_memory_used_bytes{job=\"backend\",area=\"nonheap\"}",
-              "legendFormat": "Non-heap used",
-              "refId": "C"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "custom": { "lineWidth": 2, "fillOpacity": 8, "showPoints": "never" },
-              "unit": "bytes",
-              "min": 0
-            },
-            "overrides": [
-              { "matcher": { "id": "byName", "options": "Heap max" }, "properties": [{ "id": "custom.lineStyle", "value": { "dash": [4,4], "fill": "dash" } }] }
-            ]
-          },
-          "options": {
-            "tooltip": { "mode": "multi", "sort": "desc" },
-            "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
-          },
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 }
-        },
-
-        {
-          "id": 12,
-          "title": "Request Rate Average (5m)",
-          "type": "stat",
-          "description": "Average HTTP requests per minute over the last 5 minutes",
-          "targets": [
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "(sum(rate(http_server_requests_seconds_count{job=\"backend\",uri!~\"/actuator.*\"}[5m])) * 60) or vector(0)",
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "decimals": 1,
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  { "color": "blue", "value": null },
-                  { "color": "green", "value": 1 },
-                  { "color": "yellow", "value": 10 },
-                  { "color": "red", "value": 20 }
-                ]
-              },
-              "color": { "mode": "thresholds" }
-            }
-          },
-          "options": {
-            "colorMode": "background",
-            "graphMode": "area",
-            "justifyMode": "center",
-            "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
-          },
-          "gridPos": { "h": 4, "w": 4, "x": 0, "y": 20 }
-        },
-
-        {
-          "id": 13,
-          "title": "Backend Status",
-          "type": "stat",
-          "description": "Current backend health status",
-          "targets": [
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "up{job=\"backend\"}",
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "mappings": [
-                { "options": { "0": { "color": "red", "index": 0, "text": "DOWN" }, "1": { "color": "green", "index": 1, "text": "UP" } }, "type": "value" }
-              ],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  { "color": "red", "value": null },
-                  { "color": "green", "value": 1 }
-                ]
-              },
-              "color": { "mode": "thresholds" },
-              "unit": "none"
-            }
-          },
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "center",
-            "orientation": "horizontal",
-            "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-            "textMode": "value"
-          },
-          "gridPos": { "h": 4, "w": 4, "x": 4, "y": 20 }
-        },
-
-        {
-          "id": 14,
-          "title": "Uptime",
-          "type": "stat",
-          "description": "Backend uptime since last restart",
-          "targets": [
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "process_uptime_seconds{job=\"backend\"}",
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "s",
-              "decimals": 0,
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  { "color": "red", "value": null },
-                  { "color": "yellow", "value": 300 },
-                  { "color": "green", "value": 3600 }
-                ]
-              },
-              "color": { "mode": "thresholds" }
-            }
-          },
-          "options": {
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "center",
-            "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
-          },
-          "gridPos": { "h": 4, "w": 4, "x": 8, "y": 20 }
-        },
-
-        {
-          "id": 15,
-          "title": "Active Alerts",
-          "type": "stat",
-          "description": "Number of active alert rules triggered",
-          "targets": [
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "count(ALERTS{severity!~\"none\"})",
-              "instant": true,
-              "refId": "A"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "short",
-              "decimals": 0,
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  { "color": "green", "value": null },
-                  { "color": "yellow", "value": 1 },
-                  { "color": "red", "value": 3 }
-                ]
-              },
-              "color": { "mode": "thresholds" }
-            }
-          },
-          "options": {
-            "colorMode": "background",
-            "graphMode": "none",
-            "justifyMode": "center",
-            "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
-          },
-          "gridPos": { "h": 4, "w": 4, "x": 12, "y": 20 }
-        },
-
-        {
-          "id": 16,
-          "title": "Alert Timeline",
-          "type": "timeseries",
-          "description": "Alert state changes over time",
-          "targets": [
-            {
-              "datasource": { "type": "prometheus" },
-              "expr": "ALERTS{job=\"backend\"}",
-              "legendFormat": "{{alertname}} ({{severity}})",
-              "refId": "A"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "custom": {
-                "lineWidth": 2,
-                "fillOpacity": 20,
-                "spanNulls": true,
-                "showPoints": "auto"
-              },
-              "unit": "short",
-              "min": 0,
-              "max": 1
-            },
-            "overrides": [
-              { "matcher": { "id": "byRegexName", "options": "critical" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] },
-              { "matcher": { "id": "byRegexName", "options": "warning" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } }] },
-              { "matcher": { "id": "byRegexName", "options": "info" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "blue" } }] }
-            ]
-          },
-          "options": {
-            "tooltip": { "mode": "multi", "sort": "desc" },
-            "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
-          },
-          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 }
-        }
-
       ],
       "refresh": "10s",
       "schemaVersion": 39,
@@ -678,5 +368,5 @@ data:
       "timezone": "browser",
       "title": "Gestion Retours - Backend",
       "uid": "gestion-retours-backend",
-      "version": 2
+      "version": 3
     }
