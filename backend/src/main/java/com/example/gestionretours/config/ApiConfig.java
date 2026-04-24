@@ -48,7 +48,7 @@ public class ApiConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(corsProperties.getAllowedOriginsArray())
+                                .allowedOriginPatterns(corsProperties.getAllowedOriginsArray())
                 .allowedMethods(corsProperties.getAllowedMethodsArray())
                 .allowedHeaders(corsProperties.getAllowedHeadersArray())
                 .exposedHeaders(corsProperties.getExposedHeadersArray())

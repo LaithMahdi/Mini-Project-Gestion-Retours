@@ -89,7 +89,7 @@ Alternative (NodePort + Minikube IP):
 
 ```bash
 MINIKUBE_IP=$(minikube ip)
-echo "Frontend: http://$MINIKUBE_IP:30876"
+echo "Frontend: http://$MINIKUBE_IP:31516"
 echo "Backend Swagger: http://$MINIKUBE_IP:31473/swagger-ui.html"
 ```
 
@@ -99,7 +99,7 @@ If NodePorts are different, get them with:
 kubectl get svc
 ```
 
-If you see `Invalid CORS request`, update `APP_CORS_ALLOWED_ORIGINS` in [k8s/backend-deployment.yaml](k8s/backend-deployment.yaml) to include your frontend URL (`http://<minikube-ip>:<frontend-nodeport>`), then apply and restart backend.
+If you see `Invalid CORS request`, update `APP_CORS_ALLOWED_ORIGINS` in [k8s/backend-deployment.yaml](k8s/backend-deployment.yaml) to include your frontend URL pattern (example: `http://192.168.49.2:*`), then apply and restart backend.
 
 You can also print service URLs directly:
 
@@ -150,13 +150,66 @@ Manifests ArgoCD inclus:
 - `k8s/argocd/application.yaml`
 - `k8s/argocd/application-monitoring.yaml`
 
-Étapes:
+### Setup ArgoCD
 
-1. Mettre à jour `repoURL` avec le repo GitHub réel.
-2. Appliquer les manifests ArgoCD dans le namespace `argocd`.
-3. Laisser ArgoCD synchroniser automatiquement (`prune` + `selfHeal`).
+1. Install ArgoCD:
 
-Après setup ArgoCD, aucun `kubectl apply` manuel n'est nécessaire pour les déploiements applicatifs ni pour le monitoring.
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+
+2. Wait for ArgoCD to be ready:
+
+```bash
+kubectl rollout status deployment/argocd-server -n argocd
+```
+
+3. Expose ArgoCD UI as NodePort:
+
+```bash
+kubectl patch svc argocd-server -n argocd -p '{"spec":{"type":"NodePort"}}'
+minikube service argocd-server -n argocd --url
+```
+
+4. Get ArgoCD admin credentials:
+
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d && echo
+```
+
+**ArgoCD UI:**
+- URL: http://192.168.49.2:31122
+- Username: `admin`
+- Password: `ZzihEaB4r8OfqahU`
+
+5. Apply ArgoCD Applications:
+
+```bash
+kubectl apply -f k8s/argocd/application.yaml
+kubectl apply -f k8s/argocd/application-monitoring.yaml
+```
+
+6. Verify Applications sync:
+
+```bash
+kubectl get applications.argoproj.io -n argocd
+```
+
+> **Important:** Ensure the `k8s/` folder is pushed to GitHub main branch, otherwise Applications will show `Sync Status: Unknown`.
+
+### Optional: Update ArgoCD Source
+
+If manifests are on a different branch, update `k8s/argocd/application.yaml`:
+
+```yaml
+source:
+  repoURL: https://github.com/LaithMahdi/Mini-Project-Gestion-Retours.git
+  targetRevision: <branch-name>  # Change to your branch
+  path: k8s
+```
+
+Then apply: `kubectl apply -f k8s/argocd/application.yaml`
 
 ## 9) Monitoring
 
@@ -173,12 +226,29 @@ kubectl apply -f k8s/monitoring/namespace.yaml
 kubectl apply -f k8s/monitoring/
 ```
 
-Accès:
+### Monitoring Access
+
+**Prometheus:**
+- URL: http://192.168.49.2:32764
+- Scrapes backend metrics every 15 seconds
+- Endpoint: `/actuator/prometheus`
+
+**Grafana:**
+- URL: http://192.168.49.2:32169
+- Username: `admin`
+- Password: `admin`
+- Pre-configured dashboard with backend metrics
+
+Custom access via port-forward:
 
 ```bash
-minikube service prometheus -n monitoring --url
-minikube service grafana -n monitoring --url
+kubectl port-forward svc/prometheus -n monitoring 9090:9090
+kubectl port-forward svc/grafana -n monitoring 3000:3000
 ```
+
+Then open:
+- Prometheus: http://localhost:9090
+- Grafana: http://localhost:3000
 
 ---
 
@@ -201,3 +271,7 @@ kubectl rollout restart deployment/backend
 ```bash
 kubectl describe pod <pod-name>
 ```
+
+eval "$(minikube docker-env)" && docker build -t gestion-retours-backend:latest ./backend && docker build -t gestion-retours-frontend:latest ./frontend && kubectl rollout restart deployment/backend deployment/frontend && kubectl rollout status deployment/backend --timeout=10m && kubectl rollout status deployment/frontend --timeout=10m && kubectl get pods
+
+

@@ -1,18 +1,18 @@
 .PHONY: install lint test build docker-build local-ci
 
 install:
-	cd frontend && npm ci
+	cd frontend && bun ci
 
 lint:
-	cd frontend && npm run lint
+	cd frontend && bun run lint
 	cd backend && ./mvnw -B -DskipTests compile
 
 test:
-	cd frontend && npm run test:run
+	cd frontend && bun run test:run
 	cd backend && ./mvnw -B test
 
 build:
-	cd frontend && npm run build
+	cd frontend && bun run build
 	cd backend && ./mvnw -B -DskipTests package
 
 docker-build:
