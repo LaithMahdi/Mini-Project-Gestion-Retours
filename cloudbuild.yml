@@ -4,7 +4,7 @@ steps:
     args:
       - build
       - -t
-      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:$SHORT_SHA
+      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:$_SHORT_SHA
       - -f
       - backend/dockerfile.prod
       - backend
@@ -14,7 +14,7 @@ steps:
     args:
       - build
       - -t
-      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/frontend:$SHORT_SHA
+      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/frontend:$_SHORT_SHA
       - -f
       - frontend/dockerfile.prod
       - frontend
@@ -23,13 +23,13 @@ steps:
     name: gcr.io/cloud-builders/docker
     args:
       - push
-      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:$SHORT_SHA
+      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:$_SHORT_SHA
 
   - id: Push frontend image
     name: gcr.io/cloud-builders/docker
     args:
       - push
-      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/frontend:$SHORT_SHA
+      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/frontend:$_SHORT_SHA
 
   - id: Deploy MySQL first
     name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
@@ -101,7 +101,7 @@ substitutions:
   _GKE_LOCATION: us-central1
   _K8S_NAMESPACE: production
   _FRONTEND_ORIGIN: https://example.com
-  SHORT_SHA: "" 
+  _SHORT_SHA: "" 
 options:
   dynamic_substitutions: true
 

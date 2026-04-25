@@ -186,9 +186,9 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-
       - name: Trigger Cloud Build deploy
         run: |
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
           gcloud builds submit \
             --project "${{ secrets.GCP_PROJECT_ID }}" \
             --config cloudbuild.yml \
@@ -198,5 +198,5 @@ jobs:
               _GKE_LOCATION=${{ secrets.GKE_LOCATION }},\
               _K8S_NAMESPACE=${{ secrets.GKE_NAMESPACE }},\
               _FRONTEND_ORIGIN=${{ secrets.GCP_FRONTEND_ORIGIN }},\
-              SHORT_SHA=${{ github.sha }}" \
+              _SHORT_SHA=${SHORT_SHA}" \
             .
