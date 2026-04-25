@@ -189,8 +189,29 @@ jobs:
       - name: Trigger Cloud Build deploy
         run: |
           SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
-          gcloud builds submit \
+          BUILD_ID=$(gcloud builds submit \
             --project "${{ secrets.GCP_PROJECT_ID }}" \
             --config cloudbuild.yml \
+            --async \
+            --format="value(id)" \
             --substitutions "_AR_HOSTNAME=${{ secrets.GCP_AR_HOSTNAME }},_AR_REPOSITORY=${{ secrets.GCP_ARTIFACT_REPOSITORY }},_GKE_CLUSTER=${{ secrets.GKE_CLUSTER }},_GKE_LOCATION=${{ secrets.GKE_LOCATION }},_K8S_NAMESPACE=${{ secrets.GKE_NAMESPACE }},_FRONTEND_ORIGIN=${{ secrets.GCP_FRONTEND_ORIGIN }},_SHORT_SHA=${SHORT_SHA}" \
-            .
+            .)
+          
+          echo "Build ID: $BUILD_ID"
+          echo "Waiting for build to complete..."
+          
+          gcloud builds log --stream "$BUILD_ID" --project "${{ secrets.GCP_PROJECT_ID }}" || true
+          
+          # Poll until done
+          while true; do
+            STATUS=$(gcloud builds describe "$BUILD_ID" --project "${{ secrets.GCP_PROJECT_ID }}" --format="value(status)")
+            echo "Status: $STATUS"
+            if [[ "$STATUS" == "SUCCESS" ]]; then
+              echo "Build succeeded!"
+              exit 0
+            elif [[ "$STATUS" == "FAILURE" || "$STATUS" == "CANCELLED" || "$STATUS" == "TIMEOUT" ]]; then
+              echo "Build failed with status: $STATUS"
+              exit 1
+            fi
+            sleep 15
+          done
