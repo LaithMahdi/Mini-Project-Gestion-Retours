@@ -161,3 +161,36 @@ jobs:
             ghcr.io/${{ env.REPO_LOWER }}/frontend:prod
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/gestion-retours-frontend:${{ github.sha }}
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/gestion-retours-frontend:prod
+
+  google-cloud-deploy:
+    name: Deploy to Google Cloud (prod)
+    runs-on: ubuntu-latest
+    needs: quality
+    if: github.event_name == 'push' && github.ref_name == 'prod'
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Trigger Cloud Build deploy
+        run: |
+          gcloud builds submit \
+            --project "${{ secrets.GCP_PROJECT_ID }}" \
+            --config cloudbuild.yml \
+            --substitutions "_AR_HOSTNAME=${{ secrets.GCP_AR_HOSTNAME }},_AR_REPOSITORY=${{ secrets.GCP_ARTIFACT_REPOSITORY }},_GKE_CLUSTER=${{ secrets.GKE_CLUSTER }},_GKE_LOCATION=${{ secrets.GKE_LOCATION }},_K8S_NAMESPACE=${{ secrets.GKE_NAMESPACE }},_FRONTEND_ORIGIN=${{ secrets.GCP_FRONTEND_ORIGIN }}" \
+            .

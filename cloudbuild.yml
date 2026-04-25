@@ -1,0 +1,109 @@
+steps:
+  - id: Build backend image
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:$SHORT_SHA
+      - -f
+      - backend/dockerfile.prod
+      - backend
+
+  - id: Build frontend image
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/frontend:$SHORT_SHA
+      - -f
+      - frontend/dockerfile.prod
+      - frontend
+
+  - id: Push backend image
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:$SHORT_SHA
+
+  - id: Push frontend image
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/frontend:$SHORT_SHA
+
+  - id: Deploy MySQL first
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+
+        gcloud container clusters get-credentials "${_GKE_CLUSTER}" --region "${_GKE_LOCATION}" --project "$PROJECT_ID"
+
+        kubectl create namespace "${_K8S_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
+
+        kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/db-pvc.yaml
+        kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/db-service.yaml
+        kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/db-deployment.yaml
+        kubectl rollout status deployment/mysql -n "${_K8S_NAMESPACE}" --timeout=10m
+
+  - id: Deploy backend second
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+
+        gcloud container clusters get-credentials "${_GKE_CLUSTER}" --region "${_GKE_LOCATION}" --project "$PROJECT_ID"
+
+        kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/backend-service.yaml
+        kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/backend-deployment.yaml
+
+        kubectl set image deployment/backend backend="${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:$SHORT_SHA" -n "${_K8S_NAMESPACE}"
+        kubectl set env deployment/backend APP_CORS_ALLOWED_ORIGINS="${_FRONTEND_ORIGIN}" -n "${_K8S_NAMESPACE}"
+        kubectl patch deployment backend -n "${_K8S_NAMESPACE}" --type='json' -p='[{"op":"replace","path":"/spec/template/spec/containers/0/imagePullPolicy","value":"IfNotPresent"}]'
+
+        kubectl rollout status deployment/backend -n "${_K8S_NAMESPACE}" --timeout=10m
+
+  - id: Deploy frontend third
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+
+        gcloud container clusters get-credentials "${_GKE_CLUSTER}" --region "${_GKE_LOCATION}" --project "$PROJECT_ID"
+
+        kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/frontend-service.yaml
+        kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/frontend-deployment.yaml
+
+        kubectl set image deployment/frontend frontend="${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/frontend:$SHORT_SHA" -n "${_K8S_NAMESPACE}"
+        kubectl set env deployment/frontend BACKEND_BASE_URL="http://backend:8080" NEXT_PUBLIC_BASE_URL_API="/api/v1" -n "${_K8S_NAMESPACE}"
+        kubectl patch deployment frontend -n "${_K8S_NAMESPACE}" --type='json' -p='[{"op":"replace","path":"/spec/template/spec/containers/0/imagePullPolicy","value":"IfNotPresent"}]'
+        kubectl patch service frontend -n "${_K8S_NAMESPACE}" -p='{"spec":{"type":"LoadBalancer"}}'
+
+        kubectl rollout status deployment/frontend -n "${_K8S_NAMESPACE}" --timeout=10m
+
+        echo "Frontend external endpoint (can take a few minutes):"
+        kubectl get service frontend -n "${_K8S_NAMESPACE}" -o wide
+
+images:
+  - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:$SHORT_SHA
+  - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/frontend:$SHORT_SHA
+
+substitutions:
+  _AR_HOSTNAME: us-central1-docker.pkg.dev
+  _AR_REPOSITORY: gestion-retours
+  _GKE_CLUSTER: gestion-retours-cluster
+  _GKE_LOCATION: us-central1
+  _K8S_NAMESPACE: production
+  _FRONTEND_ORIGIN: https://example.com
+
+options:
+  dynamic_substitutions: true
+
+timeout: 3600s
+
