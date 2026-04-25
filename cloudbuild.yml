@@ -95,6 +95,36 @@ steps:
         kubectl patch deployment frontend -n "${_K8S_NAMESPACE}" --type='json' -p='[{"op":"replace","path":"/spec/template/spec/containers/0/imagePullPolicy","value":"IfNotPresent"}]'
         kubectl patch service frontend -n "${_K8S_NAMESPACE}" -p='{"spec":{"type":"LoadBalancer"}}'
         kubectl rollout status deployment/frontend -n "${_K8S_NAMESPACE}" --timeout=20m
+
+        # Detect current frontend external address (it may change on redeploy)
+        FRONTEND_IP=""
+        FRONTEND_HOSTNAME=""
+        for i in {1..30}; do
+          FRONTEND_IP=$$(kubectl get service frontend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          FRONTEND_HOSTNAME=$$(kubectl get service frontend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          if [[ -n "$${FRONTEND_IP}" || -n "$${FRONTEND_HOSTNAME}" ]]; then
+            break
+          fi
+          echo "Waiting for frontend LoadBalancer external address... ($${i}/30)"
+          sleep 10
+        done
+
+        DETECTED_FRONTEND_ORIGIN=""
+        if [[ -n "$${FRONTEND_IP}" ]]; then
+          DETECTED_FRONTEND_ORIGIN="http://$${FRONTEND_IP}:3000"
+        elif [[ -n "$${FRONTEND_HOSTNAME}" ]]; then
+          DETECTED_FRONTEND_ORIGIN="http://$${FRONTEND_HOSTNAME}:3000"
+        fi
+
+        if [[ -n "$${DETECTED_FRONTEND_ORIGIN}" ]]; then
+          CORS_ORIGINS="${_FRONTEND_ORIGIN},$${DETECTED_FRONTEND_ORIGIN}"
+          echo "Updating backend CORS origins to: $${CORS_ORIGINS}"
+          kubectl set env deployment/backend APP_CORS_ALLOWED_ORIGINS="$${CORS_ORIGINS}" -n "${_K8S_NAMESPACE}"
+          kubectl rollout status deployment/backend -n "${_K8S_NAMESPACE}" --timeout=20m
+        else
+          echo "No frontend external address found yet; backend CORS remains: ${_FRONTEND_ORIGIN}"
+        fi
+
         echo "Frontend external endpoint (can take a few minutes):"
         kubectl get service frontend -n "${_K8S_NAMESPACE}" -o wide
 

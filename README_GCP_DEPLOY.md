@@ -113,6 +113,12 @@ So backend accepts cross-origin requests from your frontend origin.
 Set `GCP_FRONTEND_ORIGIN` exactly to your frontend URL, e.g.:
 - `https://app.example.com`
 
+Also, during deploy, the pipeline detects the current frontend LoadBalancer external address and appends it to backend CORS automatically.
+This helps when the frontend public IP changes between deployments.
+
+Example effective value after deploy:
+- `APP_CORS_ALLOWED_ORIGINS=https://app.example.com,http://34.172.227.205:3000`
+
 ---
 
 ## 7) Trigger flow
