@@ -38,7 +38,7 @@ steps:
       - -c
       - |
         set -euo pipefail
-        gcloud components install kubectl gke-gcloud-auth-plugin --quiet
+        apt-get install -y kubectl google-cloud-cli-gke-gcloud-auth-plugin -qq
         gcloud container clusters get-credentials "${_GKE_CLUSTER}" --region "${_GKE_LOCATION}" --project "$PROJECT_ID"
         kubectl create namespace "${_K8S_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
         kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/db-pvc.yaml
@@ -53,7 +53,7 @@ steps:
       - -c
       - |
         set -euo pipefail
-        gcloud components install kubectl gke-gcloud-auth-plugin --quiet
+        apt-get install -y kubectl google-cloud-cli-gke-gcloud-auth-plugin -qq
         gcloud container clusters get-credentials "${_GKE_CLUSTER}" --region "${_GKE_LOCATION}" --project "$PROJECT_ID"
         kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/backend-service.yaml
         kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/backend-deployment.yaml
@@ -69,7 +69,7 @@ steps:
       - -c
       - |
         set -euo pipefail
-        gcloud components install kubectl gke-gcloud-auth-plugin --quiet
+        apt-get install -y kubectl google-cloud-cli-gke-gcloud-auth-plugin -qq
         gcloud container clusters get-credentials "${_GKE_CLUSTER}" --region "${_GKE_LOCATION}" --project "$PROJECT_ID"
         kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/frontend-service.yaml
         kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/frontend-deployment.yaml
