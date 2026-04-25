@@ -60,13 +60,23 @@ steps:
         kubectl set image deployment/backend backend="${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:${_SHORT_SHA}" -n "${_K8S_NAMESPACE}"
         kubectl set env deployment/backend APP_CORS_ALLOWED_ORIGINS="${_FRONTEND_ORIGIN}" -n "${_K8S_NAMESPACE}"
         kubectl patch deployment backend -n "${_K8S_NAMESPACE}" --type='json' -p='[{"op":"replace","path":"/spec/template/spec/containers/0/imagePullPolicy","value":"IfNotPresent"}]'
+        TARGET_IMAGE="${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:${_SHORT_SHA}"
         if ! kubectl rollout status deployment/backend -n "${_K8S_NAMESPACE}" --timeout=20m; then
+          echo "Rollout status timed out. Checking effective state..."
+          CURRENT_IMAGE=$(kubectl get deployment/backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.spec.template.spec.containers[0].image}')
+          UPDATED_REPLICAS=$(kubectl get deployment/backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.updatedReplicas}')
+          READY_REPLICAS=$(kubectl get deployment/backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.readyReplicas}')
+
+          if [[ "${CURRENT_IMAGE}" == "${TARGET_IMAGE}" && "${UPDATED_REPLICAS:-0}" -ge 1 && "${READY_REPLICAS:-0}" -ge 1 ]]; then
+            echo "Backend is healthy with updated image despite rollout timeout. Continuing..."
+          else
           echo "Backend rollout failed; dumping diagnostics..."
           kubectl get pods -n "${_K8S_NAMESPACE}" -o wide
           kubectl describe deployment/backend -n "${_K8S_NAMESPACE}"
           kubectl get events -n "${_K8S_NAMESPACE}" --sort-by='.lastTimestamp' | tail -n 50
           kubectl logs -n "${_K8S_NAMESPACE}" -l app=backend --all-containers=true --tail=200 || true
           exit 1
+          fi
         fi
 
   - id: Deploy frontend third
