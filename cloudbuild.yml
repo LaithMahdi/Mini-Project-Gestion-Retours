@@ -108,7 +108,7 @@ substitutions:
   _GKE_CLUSTER: gestion-retours-cluster
   _GKE_LOCATION: us-central1
   _K8S_NAMESPACE: production
-  _FRONTEND_ORIGIN: https://example.com
+  _FRONTEND_ORIGIN: http://34.28.110.10:3000
   _SHORT_SHA: ""
 
 options:
