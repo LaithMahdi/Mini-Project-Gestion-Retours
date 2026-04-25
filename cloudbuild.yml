@@ -32,12 +32,13 @@ steps:
       - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/frontend:${_SHORT_SHA}
 
   - id: Deploy MySQL first
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
       - -c
       - |
         set -euo pipefail
+        gcloud components install kubectl gke-gcloud-auth-plugin --quiet
         gcloud container clusters get-credentials "${_GKE_CLUSTER}" --region "${_GKE_LOCATION}" --project "$PROJECT_ID"
         kubectl create namespace "${_K8S_NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
         kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/db-pvc.yaml
@@ -46,12 +47,13 @@ steps:
         kubectl rollout status deployment/mysql -n "${_K8S_NAMESPACE}" --timeout=10m
 
   - id: Deploy backend second
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
       - -c
       - |
         set -euo pipefail
+        gcloud components install kubectl gke-gcloud-auth-plugin --quiet
         gcloud container clusters get-credentials "${_GKE_CLUSTER}" --region "${_GKE_LOCATION}" --project "$PROJECT_ID"
         kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/backend-service.yaml
         kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/backend-deployment.yaml
@@ -61,12 +63,13 @@ steps:
         kubectl rollout status deployment/backend -n "${_K8S_NAMESPACE}" --timeout=10m
 
   - id: Deploy frontend third
-    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
     args:
       - -c
       - |
         set -euo pipefail
+        gcloud components install kubectl gke-gcloud-auth-plugin --quiet
         gcloud container clusters get-credentials "${_GKE_CLUSTER}" --region "${_GKE_LOCATION}" --project "$PROJECT_ID"
         kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/frontend-service.yaml
         kubectl apply -n "${_K8S_NAMESPACE}" -f k8s/frontend-deployment.yaml
