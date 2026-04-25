@@ -63,11 +63,11 @@ steps:
         TARGET_IMAGE="${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:${_SHORT_SHA}"
         if ! kubectl rollout status deployment/backend -n "${_K8S_NAMESPACE}" --timeout=20m; then
           echo "Rollout status timed out. Checking effective state..."
-          CURRENT_IMAGE=$(kubectl get deployment/backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.spec.template.spec.containers[0].image}')
-          UPDATED_REPLICAS=$(kubectl get deployment/backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.updatedReplicas}')
-          READY_REPLICAS=$(kubectl get deployment/backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.readyReplicas}')
+          CURRENT_IMAGE=$$(kubectl get deployment/backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.spec.template.spec.containers[0].image}')
+          UPDATED_REPLICAS=$$(kubectl get deployment/backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.updatedReplicas}')
+          READY_REPLICAS=$$(kubectl get deployment/backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.readyReplicas}')
 
-          if [[ "${CURRENT_IMAGE}" == "${TARGET_IMAGE}" && "${UPDATED_REPLICAS:-0}" -ge 1 && "${READY_REPLICAS:-0}" -ge 1 ]]; then
+          if [[ "$${CURRENT_IMAGE}" == "$${TARGET_IMAGE}" && "$${UPDATED_REPLICAS:-0}" -ge 1 && "$${READY_REPLICAS:-0}" -ge 1 ]]; then
             echo "Backend is healthy with updated image despite rollout timeout. Continuing..."
           else
           echo "Backend rollout failed; dumping diagnostics..."
