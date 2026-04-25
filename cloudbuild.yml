@@ -101,7 +101,7 @@ substitutions:
   _GKE_LOCATION: us-central1
   _K8S_NAMESPACE: production
   _FRONTEND_ORIGIN: https://example.com
-
+  SHORT_SHA: "" 
 options:
   dynamic_substitutions: true
 

@@ -192,5 +192,11 @@ jobs:
           gcloud builds submit \
             --project "${{ secrets.GCP_PROJECT_ID }}" \
             --config cloudbuild.yml \
-            --substitutions "_AR_HOSTNAME=${{ secrets.GCP_AR_HOSTNAME }},_AR_REPOSITORY=${{ secrets.GCP_ARTIFACT_REPOSITORY }},_GKE_CLUSTER=${{ secrets.GKE_CLUSTER }},_GKE_LOCATION=${{ secrets.GKE_LOCATION }},_K8S_NAMESPACE=${{ secrets.GKE_NAMESPACE }},_FRONTEND_ORIGIN=${{ secrets.GCP_FRONTEND_ORIGIN }}" \
+            --substitutions "_AR_HOSTNAME=${{ secrets.GCP_AR_HOSTNAME }},\
+              _AR_REPOSITORY=${{ secrets.GCP_ARTIFACT_REPOSITORY }},\
+              _GKE_CLUSTER=${{ secrets.GKE_CLUSTER }},\
+              _GKE_LOCATION=${{ secrets.GKE_LOCATION }},\
+              _K8S_NAMESPACE=${{ secrets.GKE_NAMESPACE }},\
+              _FRONTEND_ORIGIN=${{ secrets.GCP_FRONTEND_ORIGIN }},\
+              SHORT_SHA=${{ github.sha }}" \
             .
