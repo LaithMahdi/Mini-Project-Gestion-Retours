@@ -77,7 +77,7 @@ steps:
         kubectl set env deployment/frontend BACKEND_BASE_URL="http://backend:8080" NEXT_PUBLIC_BASE_URL_API="/api/v1" -n "${_K8S_NAMESPACE}"
         kubectl patch deployment frontend -n "${_K8S_NAMESPACE}" --type='json' -p='[{"op":"replace","path":"/spec/template/spec/containers/0/imagePullPolicy","value":"IfNotPresent"}]'
         kubectl patch service frontend -n "${_K8S_NAMESPACE}" -p='{"spec":{"type":"LoadBalancer"}}'
-        kubectl rollout status deployment/frontend -n "${_K8S_NAMESPACE}" --timeout=10m
+        kubectl rollout status deployment/frontend -n "${_K8S_NAMESPACE}" --timeout=15m
         echo "Frontend external endpoint (can take a few minutes):"
         kubectl get service frontend -n "${_K8S_NAMESPACE}" -o wide
 

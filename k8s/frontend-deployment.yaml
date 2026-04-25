@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
+  namespace: production
 spec:
   replicas: 1
   selector:
@@ -13,13 +14,22 @@ spec:
         app: frontend
     spec:
       containers:
-      - name: frontend
-        image: gestion-retours-frontend:latest
-        imagePullPolicy: Never
-        env:
-          - name: NODE_ENV
-            value: production
-          - name: NEXT_PUBLIC_BASE_URL_API
-            value: /api/v1
-        ports:
-          - containerPort: 3000
+        - name: frontend
+          image: us-central1-docker.pkg.dev/retour-494119/gestion-retours/frontend:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: NEXT_PUBLIC_BASE_URL_API
+              value: /api/v1
+            - name: BACKEND_BASE_URL
+              value: http://backend:8080
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
