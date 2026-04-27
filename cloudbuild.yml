@@ -79,6 +79,28 @@ steps:
           fi
         fi
 
+        # Wait for backend LoadBalancer external IP
+        echo "Waiting for backend LoadBalancer external IP..."
+        BACKEND_IP=""
+        BACKEND_HOSTNAME=""
+        for i in {1..30}; do
+          BACKEND_IP=$$(kubectl get service backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          BACKEND_HOSTNAME=$$(kubectl get service backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          if [[ -n "$${BACKEND_IP}" || -n "$${BACKEND_HOSTNAME}" ]]; then
+            break
+          fi
+          echo "Waiting for backend LoadBalancer external address... ($${i}/30)"
+          sleep 10
+        done
+
+        if [[ -n "$${BACKEND_IP}" ]]; then
+          echo "Backend external IP: $${BACKEND_IP}"
+        elif [[ -n "$${BACKEND_HOSTNAME}" ]]; then
+          echo "Backend external hostname: $${BACKEND_HOSTNAME}"
+        else
+          echo "WARNING: Backend external address not yet available. It may take a few more minutes."
+        fi
+
   - id: Deploy frontend third
     name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: bash
@@ -93,10 +115,9 @@ steps:
         kubectl set image deployment/frontend frontend="${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/frontend:${_SHORT_SHA}" -n "${_K8S_NAMESPACE}"
         kubectl set env deployment/frontend BACKEND_BASE_URL="http://backend:8080" NEXT_PUBLIC_BASE_URL_API="/api/v1" -n "${_K8S_NAMESPACE}"
         kubectl patch deployment frontend -n "${_K8S_NAMESPACE}" --type='json' -p='[{"op":"replace","path":"/spec/template/spec/containers/0/imagePullPolicy","value":"IfNotPresent"}]'
-        kubectl patch service frontend -n "${_K8S_NAMESPACE}" -p='{"spec":{"type":"LoadBalancer"}}'
         kubectl rollout status deployment/frontend -n "${_K8S_NAMESPACE}" --timeout=20m
 
-        # Detect current frontend external address (it may change on redeploy)
+        # ── Detect frontend external address ──
         FRONTEND_IP=""
         FRONTEND_HOSTNAME=""
         for i in {1..30}; do
@@ -116,6 +137,27 @@ steps:
           DETECTED_FRONTEND_ORIGIN="http://$${FRONTEND_HOSTNAME}:3000"
         fi
 
+        # ── Detect backend external address ──
+        BACKEND_IP=""
+        BACKEND_HOSTNAME=""
+        for i in {1..30}; do
+          BACKEND_IP=$$(kubectl get service backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          BACKEND_HOSTNAME=$$(kubectl get service backend -n "${_K8S_NAMESPACE}" -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          if [[ -n "$${BACKEND_IP}" || -n "$${BACKEND_HOSTNAME}" ]]; then
+            break
+          fi
+          echo "Waiting for backend LoadBalancer external address... ($${i}/30)"
+          sleep 10
+        done
+
+        DETECTED_BACKEND_ORIGIN=""
+        if [[ -n "$${BACKEND_IP}" ]]; then
+          DETECTED_BACKEND_ORIGIN="http://$${BACKEND_IP}:8080"
+        elif [[ -n "$${BACKEND_HOSTNAME}" ]]; then
+          DETECTED_BACKEND_ORIGIN="http://$${BACKEND_HOSTNAME}:8080"
+        fi
+
+        # ── Update backend CORS to allow detected frontend origin ──
         if [[ -n "$${DETECTED_FRONTEND_ORIGIN}" ]]; then
           CORS_ORIGINS="${_FRONTEND_ORIGIN},$${DETECTED_FRONTEND_ORIGIN}"
           echo "Updating backend CORS origins to: $${CORS_ORIGINS}"
@@ -125,8 +167,29 @@ steps:
           echo "No frontend external address found yet; backend CORS remains: ${_FRONTEND_ORIGIN}"
         fi
 
-        echo "Frontend external endpoint (can take a few minutes):"
-        kubectl get service frontend -n "${_K8S_NAMESPACE}" -o wide
+        # ── Print both external endpoints ──
+        echo ""
+        echo "=============================================="
+        echo "  DEPLOYMENT COMPLETE — EXTERNAL ENDPOINTS"
+        echo "=============================================="
+        echo ""
+        if [[ -n "$${DETECTED_FRONTEND_ORIGIN}" ]]; then
+          echo "  FRONTEND URL : $${DETECTED_FRONTEND_ORIGIN}"
+        else
+          echo "  FRONTEND URL : (pending — check 'kubectl get svc frontend -n ${_K8S_NAMESPACE}')"
+        fi
+        echo ""
+        if [[ -n "$${DETECTED_BACKEND_ORIGIN}" ]]; then
+          echo "  BACKEND URL  : $${DETECTED_BACKEND_ORIGIN}"
+          echo "  SWAGGER UI   : $${DETECTED_BACKEND_ORIGIN}/swagger-ui.html"
+        else
+          echo "  BACKEND URL  : (pending — check 'kubectl get svc backend -n ${_K8S_NAMESPACE}')"
+        fi
+        echo ""
+        echo "=============================================="
+        echo ""
+
+        kubectl get services -n "${_K8S_NAMESPACE}" -o wide
 
 images:
   - ${_AR_HOSTNAME}/$PROJECT_ID/${_AR_REPOSITORY}/backend:${_SHORT_SHA}
